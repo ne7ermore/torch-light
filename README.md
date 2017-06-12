@@ -1,6 +1,7 @@
-### Pytorch Examples
+## Pytorch Examples
+**
 
-## Table of Contents
+### Table of Contents
 
 #### 1. Basics
 ##### TODO
