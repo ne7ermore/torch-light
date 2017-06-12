@@ -7,6 +7,7 @@ This is the implementation Chinese text multi-classfication
 * Jieba
 
 ## Usage
+```
 python3 main.py -h
 ```
 
