@@ -50,7 +50,7 @@ loss_function = nn.NLLLoss()
 model = CBOW(vocab_size, EMBEDDING_DIM, CONTEXT_SIZE)
 optimizer = optim.SGD(model.parameters(), lr=0.001)
 
-for epoch in range(40):
+for epoch in range(1, 41):
     total_loss = 0.0
     for context, target in data:
         v_ctx = make_context_vector(context, word_to_ix)
@@ -58,5 +58,7 @@ for epoch in range(40):
         model.zero_grad()
         out = model(v_ctx)
         loss = loss_function(out, v_tar)
+        total_loss += loss
         loss.backward()
         optimizer.step()
+    print("end of epoch {%d} | loss {%2.3f}".format(epoch, total_loss))
