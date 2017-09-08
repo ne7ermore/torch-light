@@ -7,3 +7,6 @@
 
 #### 2. CNN
 * [Text classfier](https://github.com/ne7ermore/torch_light/tree/master/cnn_text_classfier)
+
+#### 3. LSTM
+* [Chinese classfier](https://github.com/ne7ermore/torch_light/tree/master/lstm_chinese_classfier)
