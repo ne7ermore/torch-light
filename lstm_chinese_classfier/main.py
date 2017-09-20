@@ -102,7 +102,7 @@ def parse_hidden(hidden):
     if isinstance(hidden, Variable):
         return hidden.cuda()
     else:
-        [parse_hidden(h) for h in hidden]
+        return tuple(parse_hidden(v) for v in hidden)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learn_rate)
