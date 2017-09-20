@@ -2,8 +2,8 @@
 This is the implementation Chinese text multi-classfication
 
 ## Requirement
-* python 3
-* pytorch > 0.1
+* python 3.5
+* pytorch 0.2.0
 * Jieba
 
 ## Usage
