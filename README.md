@@ -21,6 +21,8 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 #### 2. Advanced
 * [biMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
 
+#### 3. Special thing
+* [customize](https://github.com/ne7ermore/torch_light/tree/master/customize)
 
 ## Getting Started
 ```
