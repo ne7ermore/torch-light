@@ -18,30 +18,30 @@ class FullMatchLay(nn.Module):
     def forward(self, cont_repres, other_cont_first):
         """
         Args:
-            cont_repres - [bsz, this_len, context_lstm_dim]
-            other_cont_first - [bsz, context_lstm_dim]
+            cont_repres - [batch_size, this_len, context_lstm_dim]
+            other_cont_first - [batch_size, context_lstm_dim]
         Return:
-            size - [bsz, this_len, mp_dim]
+            size - [batch_size, this_len, mp_dim]
         """
         def expand(context, weight):
             """
             Args:
-                [bsz, this_len, context_lstm_dim]
+                [batch_size, this_len, context_lstm_dim]
                 [mp_dim, context_lstm_dim]
             Return:
-                [bsz, this_len, mp_dim, context_lstm_dim]
+                [batch_size, this_len, mp_dim, context_lstm_dim]
             """
             # [1, 1, mp_dim, context_lstm_dim]
             weight = weight.unsqueeze(0)
             weight = weight.unsqueeze(0)
-            # [bsz, this_len, 1, context_lstm_dim]
+            # [batch_size, this_len, 1, context_lstm_dim]
             context = context.unsqueeze(2)
             return torch.mul(context, weight)
 
         cont_repres = expand(cont_repres, self.weight)
 
         other_cont_first = multi_perspective_expand_for_2D(other_cont_first, self.weight)
-        # [bsz, 1, mp_dim, context_lstm_dim]
+        # [batch_size, 1, mp_dim, context_lstm_dim]
         other_cont_first = other_cont_first.unsqueeze(1)
         return cosine_similarity(cont_repres, other_cont_first, cont_repres.dim()-1)
 
@@ -57,8 +57,8 @@ class MaxpoolMatchLay(nn.Module):
     def forward(self, cont_repres, other_cont_repres):
         """
         Args:
-            cont_repres - [bsz, this_len, context_lstm_dim]
-            other_cont_repres - [bsz, other_len, context_lstm_dim]
+            cont_repres - [batch_size, this_len, context_lstm_dim]
+            other_cont_repres - [batch_size, other_len, context_lstm_dim]
         Return:
             size - [bsz, this_len, mp_dim*2]
         """
@@ -80,6 +80,7 @@ class MaxpoolMatchLay(nn.Module):
         # [bsz, 1, other_len, self.mp_dim, self.cont_dim]
         other_cont_repres = other_cont_repres.unsqueeze(1)
 
+        # [bsz, this_len, other_len, self.mp_dim]fanruan
         simi = cosine_similarity(cont_repres, other_cont_repres, cont_repres.dim()-1)
 
         t_max, _ = simi.max(2)
