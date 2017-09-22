@@ -22,7 +22,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [biMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
 
 #### 3. Special thing
-* [customize](https://github.com/ne7ermore/torch_light/tree/master/customize)
+* [customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
 
 ## Getting Started
 ```
