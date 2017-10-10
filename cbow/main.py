@@ -13,7 +13,6 @@ The evolution of a process is directed by a pattern of rules
 called a program. People create programs to direct processes. In effect,
 we conjure the spirits of the computer with our spells.""".split()
 
-# By deriving a set from `raw_text`, we deduplicate the array
 vocab = set(raw_text)
 vocab_size = len(vocab)
 
@@ -48,7 +47,7 @@ def make_context_vector(context, word_to_ix):
 
 loss_function = nn.NLLLoss()
 model = CBOW(vocab_size, EMBEDDING_DIM, CONTEXT_SIZE)
-optimizer = optim.SGD(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 for epoch in range(1, 41):
     total_loss = 0.0
@@ -58,7 +57,7 @@ for epoch in range(1, 41):
         model.zero_grad()
         out = model(v_ctx)
         loss = loss_function(out, v_tar)
-        total_loss += loss
+        total_loss += loss.data
         loss.backward()
         optimizer.step()
-    print("end of epoch {%d} | loss {%2.3f}".format(epoch, total_loss))
+    print("end of epoch {} | loss {:2.3f}".format(epoch, total_loss[0]))

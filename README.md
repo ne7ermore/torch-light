@@ -15,6 +15,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 #### 1. Basics
 
 * [Cbow](https://github.com/ne7ermore/torch_light/tree/master/cbow)
+* [N-Gram](https://github.com/ne7ermore/torch_light/tree/master/ngram)
 * [CNN Text classfier](https://github.com/ne7ermore/torch_light/tree/master/cnn_text_classfier)
 * [LSTM Chinese classfier](https://github.com/ne7ermore/torch_light/tree/master/lstm_chinese_classfier)
 
