@@ -22,6 +22,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 #### 2. Advanced
 * [biMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
 * [seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
+* [pair-ranking-cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
 
 #### 3. Special thing
 * [customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
