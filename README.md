@@ -23,6 +23,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [biMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
 * [seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
 * [pair-ranking-cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
+* [bilstm-crf-cut](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 
 #### 3. Special thing
 * [customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
