@@ -2,21 +2,21 @@ import torch
 
 import argparse
 
-import const
+from const import *
 
 
 def corpora2idx(sents, ind2idx):
-    return [[ind2idx[w] if w in ind2idx else const.UNK for w in s] for s in sents]
+    return [[ind2idx[w] if w in ind2idx else UNK for w in s] for s in sents]
 
 class Dictionary(object):
     def __init__(self):
         self.word2idx = {
-            const.WORD[const.X]: const.X,
-            const.UNK_WORD: const.X
+            WORD[X]: X,
+            UNK_WORD: X
         }
         self.idx2word = {
-            const.X: const.WORD[const.X],
-            const.UNK: const.UNK_WORD
+            X: WORD[X],
+            UNK: UNK_WORD
         }
         self.idx = 2
 
@@ -49,25 +49,27 @@ class Corpus(object):
 
         self.sent_dict = Dictionary()
         self.tgt_dict = {
-            const.WORD[const.X]: const.X,
-            const.WORD[const.B]: const.B,
-            const.WORD[const.M]: const.M,
-            const.WORD[const.E]: const.E,
-            const.WORD[const.S]: const.S
+            WORD[X]: X,
+            WORD[O]: O,
+            WORD[BH]: BH,
+            WORD[IH]: IH,
+            WORD[BW]: BW,
+            WORD[IW]: IW
         }
 
     def parse_train(self):
         src_sents, labels = [], []
-
+        ignore_text = 0
         for sentence in open(self._train_src):
             words, tgts = [], []
 
             objs = sentence.strip().split("\t")
             if len(objs) > self.max_len:
+                ignore_text += 1
                 objs = objs[:self.max_len]
 
             for obj in objs:
-                word, tgt = obj.strip().split("/")
+                word, tgt = obj.strip().split(SPLIT_TAG)
                 words += [word]
                 tgts += [tgt]
 
@@ -78,6 +80,7 @@ class Corpus(object):
 
         self.src_sents = src_sents
         self.labels = labels
+        print("length of text more then {} numbers: {}".format(self.max_len, ignore_text))
 
     def parse_valid(self):
         src_sents, labels = [], []
@@ -90,7 +93,7 @@ class Corpus(object):
                 objs = objs[:self.max_len]
 
             for obj in objs:
-                word, tgt = obj.strip().split("/")
+                word, tgt = obj.strip().split(SPLIT_TAG)
                 words += [word]
                 tgts += [tgt]
 
@@ -127,29 +130,39 @@ class Corpus(object):
 
     def trains_score(self):
         A = {
-          'sb':0,
-          'ss':0,
-          'be':0,
-          'bm':0,
-          'me':0,
-          'mm':0,
-          'eb':0,
-          'es':0
+          'oH':0,
+          'oW':0,
+          'oo':0,
+          'Hh':1.0,
+          'hh':0,
+          'ho':0,
+          'hW':0,
+          'Ww':1.0,
+          'ww':0,
+          'wo':0,
+          'wH':0,
         }
         for label in self.labels:
             for t in range(len(label) - 1):
                 key = label[t] + label[t+1]
+                assert key in A
                 A[key] += 1.0
 
         ts = dict()
-        ts['sb'] = A['sb'] / (A['sb'] + A['ss'])
-        ts['ss'] = 1.0 - ts['sb']
-        ts['be'] = A['be'] / (A['be'] + A['bm'])
-        ts['bm'] = 1.0 - ts['be']
-        ts['me'] = A['me'] / (A['me'] + A['mm'])
-        ts['mm'] = 1.0 - ts['me']
-        ts['eb'] = A['eb'] / (A['eb'] + A['es'])
-        ts['es'] = 1.0 - ts['eb']
+        ts['oH'] = A['oH'] / (A['oH'] + A['oW'] + A['oo'])
+        ts['oW'] = A['oW'] / (A['oH'] + A['oW'] + A['oo'])
+        ts['oo'] = A['oo'] / (A['oH'] + A['oW'] + A['oo'])
+
+        ts['hh'] = A['hh'] / (A['hh'] + A['ho'] + A['hW'])
+        ts['ho'] = A['ho'] / (A['hh'] + A['ho'] + A['hW'])
+        ts['hW'] = A['hW'] / (A['hh'] + A['ho'] + A['hW'])
+
+        ts['ww'] = A['ww'] / (A['ww'] + A['wo'] + A['wH'])
+        ts['wo'] = A['wo'] / (A['ww'] + A['wo'] + A['wH'])
+        ts['wH'] = A['wH'] / (A['ww'] + A['wo'] + A['wH'])
+
+        ts["Hh"] = 1.
+        ts["Ww"] = 1.
 
         return ts
 
@@ -159,7 +172,7 @@ class Corpus(object):
         self.save()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='bilstm crf word-cut')
+    parser = argparse.ArgumentParser(description='bilstm crf nre')
     parser.add_argument('--train-src', type=str, required=True,
                         help='train file')
     parser.add_argument('--save-data', type=str, required=True,
