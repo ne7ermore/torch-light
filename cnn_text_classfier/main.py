@@ -11,10 +11,10 @@ useCuda = torch.cuda.is_available()
 parser = argparse.ArgumentParser(description='CNN text classificer')
 parser.add_argument('--lr', type=float, default=0.001,
                     help='initial learning rate [default: 0.001]')
-parser.add_argument('--epochs', type=int, default=256,
-                    help='number of epochs for train [default: 256]')
-parser.add_argument('--batch-size', type=int, default=50,
-                    help='batch size for training [default: 50]')
+parser.add_argument('--epochs', type=int, default=32,
+                    help='number of epochs for train [default: 32]')
+parser.add_argument('--batch-size', type=int, default=64,
+                    help='batch size for training [default: 64]')
 parser.add_argument('--log-interval',  type=int, default=1000,
                     help='report interval [default: 1000]')
 parser.add_argument('--save', type=str, default='./cnn',
