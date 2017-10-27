@@ -1,10 +1,11 @@
 ## Introduction
-This is the implementation Chinese text multi-classfication
+Module implemention from "[Convolutional Neural Networks for Sentence Classification](https://arxiv.org/abs/1408.5882)".
 
 ## Requirement
 * python 3.5
 * pytorch 0.2.0
-* Jieba
+* numpy 1.13.1
+* tqdm
 
 ## Usage
 ```
