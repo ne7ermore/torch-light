@@ -16,38 +16,30 @@ You will get:
 
 ```
 usage: main.py [-h] [--lr LR] [--epochs EPOCHS] [--batch-size BATCH_SIZE]
-               [--log-interval LOG_INTERVAL] [--save SAVE] [--data DATA]
-               [--max-len MAX_LEN] [--dropout DROPOUT] [--embed-dim EMBED_DIM]
-               [--kernel-num KERNEL_NUM] [--filter-sizes FILTER_SIZES]
-               [--hidden-size HIDDEN_SIZE]
-               [--dropout-switches DROPOUT_SWITCHES] [--seed SEED]
+               [--save SAVE] [--data DATA] [--dropout DROPOUT]
+               [--embed-dim EMBED_DIM] [--kernel-num KERNEL_NUM]
+               [--filter-sizes FILTER_SIZES] [--seed SEED] [--cuda-able]
 
-CNN text classificer
+CNN text classification
 
 optional arguments:
   -h, --help            show this help message and exit
   --lr LR               initial learning rate [default: 0.001]
-  --epochs EPOCHS       number of epochs for train [default: 256]
+  --epochs EPOCHS       number of epochs for train [default: 32]
   --batch-size BATCH_SIZE
-                        batch size for training [default: 50]
-  --log-interval LOG_INTERVAL
-                        report interval [default: 1000]
+                        batch size for training [default: 64]
   --save SAVE           path to save the final model
   --data DATA           location of the data corpus
-  --max-len MAX_LEN     max length of one comment
   --dropout DROPOUT     the probability for dropout (0 = no dropout) [default:
                         0.5]
   --embed-dim EMBED_DIM
-                        number of embedding dimension [default: 256]
+                        number of embedding dimension [default: 128]
   --kernel-num KERNEL_NUM
                         number of each kind of kernel
   --filter-sizes FILTER_SIZES
                         filter sizes
-  --hidden-size HIDDEN_SIZE
-                        hidden size
-  --dropout-switches DROPOUT_SWITCHES
-                        dropout-switches
   --seed SEED           random seed
+  --cuda-able           enables cuda
 ```
 
 ## Train

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class  CNN_Text(nn.Module):
+class CNN_Text(nn.Module):
     def __init__(self, args):
         super().__init__()
         for k, v in args.__dict__.items():
