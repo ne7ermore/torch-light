@@ -54,5 +54,5 @@ class LSTM_Text(nn.Module):
     def forward(self, input, hidden):
         encode = self.lookup_table(input)
         lstm_out, hidden = self.lstm(encode.transpose(0, 1), hidden)
-        output = self.ln(lstm_out[-1])
+        output = self.ln(lstm_out)[-1]
         return F.log_softmax(self.logistic(output)), hidden

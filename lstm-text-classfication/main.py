@@ -71,7 +71,7 @@ rnn = model.LSTM_Text(args)
 if use_cuda:
     rnn = rnn.cuda()
 
-optimizer = torch.optim.Adam(rnn.parameters(), lr=args.lr)
+optimizer = torch.optim.Adam(rnn.parameters(), lr=args.lr, weight_decay=0.001)
 criterion = torch.nn.CrossEntropyLoss()
 
 # ##############################################################################
