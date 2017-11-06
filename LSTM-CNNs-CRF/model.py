@@ -49,7 +49,6 @@ class CRF(nn.Module):
         temp = self.transitions.index_select(1, tags[:, -1])
         bsz_t = gather_index(temp.transpose(0, 1),
                     Variable(self.torch.LongTensor([STOP]*bsz)))
-
         return score+bsz_t
 
     def forward(self, input):
@@ -135,7 +134,8 @@ class BiLSTM(nn.Module):
 
     def init_hidden(self):
         weight = next(self.parameters()).data
-        return (Variable(weight.new(self.lstm_layers*2, self.batch_size, self.lstm_hsz//2).zero_()),Variable(weight.new(self.lstm_layers*2, self.batch_size, self.lstm_hsz//2).zero_()))
+        return (Variable(weight.new(self.lstm_layers*2, self.batch_size, self.lstm_hsz//2).zero_()),
+            Variable(weight.new(self.lstm_layers*2, self.batch_size, self.lstm_hsz//2).zero_()))
 
 class CNN(nn.Module):
     def __init__(self, char_size, char_ebd_dim,
@@ -189,7 +189,7 @@ class Model(nn.Module):
         output = self.logistic(output)
         pre_score = self.crf(output)
         label_score = self.crf._score_sentence(output, labels)
-        return (pre_score-label_score).sum(), None
+        return (pre_score-label_score).mean(), None
 
     def predict(self, word, char):
         char_out = self.cnn(char)
