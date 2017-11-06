@@ -28,6 +28,9 @@ class CNN_Text(nn.Module):
 
         self.logistic = nn.Linear(len(self.filter_sizes) * self.kernel_num,
                                 self.label_size)
+
+        self.dropout = nn.Dropout(self.dropout)
+
         self._init_weight()
 
     def forward(self, x):
@@ -48,7 +51,7 @@ class CNN_Text(nn.Module):
             enc_ = enc_.squeeze(h_idx)
             enc_outs.append(enc_)
 
-        encoding = F.dropout(torch.cat(enc_outs, 1))
+        encoding = self.dropout(torch.cat(enc_outs, 1))
         return F.log_softmax(self.logistic(encoding))
 
     def _init_weight(self, scope=.1):

@@ -1,5 +1,6 @@
 ## Introduction
-Module implemention from "[Convolutional Neural Networks for Sentence Classification](https://arxiv.org/abs/1408.5882)".
+Module implemention from "[Convolutional Neural Networks for Sentence Classification](https://arxiv.org/abs/1408.5882)". <br>
+Perform experiments on the English data from [TREC](http://cogcomp.org/Data/QA/QC/)
 
 ## Requirement
 * python 3.5
@@ -46,3 +47,8 @@ optional arguments:
 ```
 python3 main.py
 ```
+
+## Result
+
+> Acc: 98.6%
+<p align="center"><img width="40%" src="cnn_c.jpg" /></p>

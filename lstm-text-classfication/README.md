@@ -1,5 +1,6 @@
 ## Introduction
-This is the implementation for LSTM Text Classfication
+This is the implementation for LSTM Text Classfication. <br>
+Perform experiments on the English data from [TREC](http://cogcomp.org/Data/QA/QC/)
 
 ## Requirement
 * python 3.5
@@ -22,6 +23,7 @@ usage: main.py [-h] [--lr LR] [--epochs EPOCHS] [--batch-size BATCH_SIZE]
                [--bidirectional]
 
 LSTM text classification
+
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -48,3 +50,9 @@ optional arguments:
 ```
 python3 main.py
 ```
+
+
+## Result
+
+> Acc: 97%
+<p align="center"><img width="40%" src="lstm_c.jpg" /></p>

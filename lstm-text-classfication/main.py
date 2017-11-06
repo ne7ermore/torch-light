@@ -160,24 +160,3 @@ try:
 except KeyboardInterrupt:
     print("-"*90)
     print("Exiting from training early | cost time: {:5.2f}min".format((time.time() - total_start_time)/60.0))
-
-# ##############################################################################
-# Result
-# ##############################################################################
-import matplotlib.pyplot as plt
-import numpy as np
-
-train_loss = np.asarray(train_loss)
-valid_loss = np.asarray(valid_loss)
-accuracy = np.asarray(accuracy)
-
-x = np.arange(0.0, float(epoch-1), 1.0)
-
-plt.plot(x, train_loss, label="train_loss")
-plt.plot(x, valid_loss, label="valid_loss")
-plt.plot(x, accuracy, label="accuracy")
-
-leg = plt.legend(loc='upper right', ncol=2, mode="expand", shadow=True, fancybox=True)
-leg.get_frame().set_alpha(1)
-
-plt.show()

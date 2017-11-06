@@ -25,6 +25,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [pair-ranking-cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
 * [bilstm-crf-cut](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 * [biLSTM-CRF-ner](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
+* [LSTM-CNNs-CRF](https://github.com/ne7ermore/torch_light/tree/master/LSTM-CNNs-CRF)
 
 #### 3. Special thing
 * [customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)

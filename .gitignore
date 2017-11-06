@@ -1,2 +1,4 @@
 *.pyc
 *.pt
+word2vec
+img.py
