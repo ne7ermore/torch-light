@@ -48,9 +48,9 @@ class NGram(nn.Module):
 
     def _init_weight(self, scope=0.1):
         self.embeddings.weight.data.uniform_(-scope, scope)
-        self.l1.weight.data.uniform_(-scope, scope)
+        self.l1.weight.data.uniform_(0, scope)
         self.l1.bias.data.fill_(0)
-        self.l2.weight.data.uniform_(-scope, scope)
+        self.l2.weight.data.uniform_(0, scope)
         self.l2.bias.data.fill_(0)
 
 criterion = nn.NLLLoss()

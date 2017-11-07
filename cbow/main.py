@@ -29,9 +29,10 @@ class CBOW(nn.Module):
         super(CBOW, self).__init__()
 
         self.ebd = nn.Embedding(vocab_size, ebd_size)
-        self.ebd.weight.data.uniform_(-0.1, 0.1)
         self.lr1 = nn.Linear(ebd_size*cont_size*2, 128)
         self.lr2 = nn.Linear(128, vocab_size)
+
+        self._init_weight()
 
     def forward(self, inputs):
         out = self.ebd(inputs).view(1, -1)
@@ -39,6 +40,13 @@ class CBOW(nn.Module):
         out = self.lr2(out)
         out = F.log_softmax(out)
         return out
+
+    def _init_weight(self, scope=0.1):
+        self.ebd.weight.data.uniform_(-scope, scope)
+        self.lr1.weight.data.uniform_(0, scope)
+        self.lr1.bias.data.fill_(0)
+        self.lr2.weight.data.uniform_(0, scope)
+        self.lr2.bias.data.fill_(0)
 
 def make_context_vector(context, word_to_ix):
     idxs = [word_to_ix[w] for w in context]
