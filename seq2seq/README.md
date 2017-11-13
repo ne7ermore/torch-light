@@ -1,4 +1,4 @@
-## Seq2seq for English to French translation
+## Seq2seq for French to English translation
 Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706.03762)" (Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin, arxiv, 2017).
 
 ##### Instead of CNN of RNN, reasons for using attention:
@@ -17,7 +17,7 @@ Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706
 * numpy 1.13.1
 
 ## Train data
-The data for this project is a set of many thousands of English to French translation pairs. <br>
+The data for this project is a set of many thousands of French to English translation pairs. <br>
 Downloads available at http://www.manythings.org/anki/
 
 ## Usage
