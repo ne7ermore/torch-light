@@ -1,4 +1,4 @@
-## Seq2seq for Question-to-Answer
+## Seq2seq for English to French translation
 Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706.03762)" (Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin, arxiv, 2017).
 
 ##### Instead of CNN of RNN, reasons for using attention:
@@ -15,36 +15,31 @@ Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706
 * python 3.5
 * pytorch 0.2.0
 * numpy 1.13.1
-* Jieba
+
+## Train data
+The data for this project is a set of many thousands of English to French translation pairs. <br>
+Downloads available at http://www.manythings.org/anki/
 
 ## Usage
 
-### Prepare training data
-```
-python3 corpus.py -h
-```
-
-You will get:
+### Translate
 
 ```
-usage: corpus.py [-h] --train-src TRAIN_SRC --save-data SAVE_DATA
-                 [--valid-src VALID_SRC] [--max-lenth MAX_LENTH]
-                 [--min-word-count MIN_WORD_COUNT]
+python transform.py --French="Tourne à droite au prochain carrefour."
 
-seq2sqe corpora handle
+Translated - turn right at the next stayed .
+```
+*****
+```
+python transform.py --French="Il est de ta responsabilité de terminer ce travail."
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --train-src TRAIN_SRC
-                        train file
-  --save-data SAVE_DATA
-                        path to save processed data
-  --valid-src VALID_SRC
-                        valid file
-  --max-lenth MAX_LENTH
-                        max length of sentence [default: 32]
-  --min-word-count MIN_WORD_COUNT
-                        min corpora count to discard [default: 5]
+Translated - it s your responsibility to finish the job .
+```
+*****
+```
+python transform.py --French="J'ai besoin d'une paire de ciseaux pour couper ce papier."
+
+Translated - i need a pair of scissors to cut this paper .
 ```
 
 ### Train model
@@ -55,47 +50,30 @@ python3 train.py -h
 You will get:
 
 ```
-usage: train.py [-h] [--epochs EPOCHS] [--batch-size BATCH_SIZE]
-                [--dropout DROPOUT] [--seed SEED]
-                [--log-interval LOG_INTERVAL] [--cuda-able] [--not-by-word]
-                [--save SAVE] [--save-epoch] [--data DATA]
-                [--eval-data EVAL_DATA] [--proj-share-weight]
-                [--embs-share-weight] [--d-model D_MODEL]
-                [--d-inner-hid D_INNER_HID] [--n-head N_HEAD]
-                [--n-layers N_LAYERS] [--n-warmup-steps N_WARMUP_STEPS]
+usage: train.py [-h] [--epochs EPOCHS] [--batch-size BATCH_SIZE] [--seed SEED]
+                [--cuda-able] [--save SAVE] [--data DATA] [--not-share-linear]
+                [--dropout DROPOUT] [--d-model D_MODEL] [--d-ff D_FF]
+                [--n-head N_HEAD] [--n-stack-layers N_STACK_LAYERS]
+                [--n-warmup-steps N_WARMUP_STEPS]
 
 seq2seq
 
 optional arguments:
   -h, --help            show this help message and exit
-  --epochs EPOCHS       number of epochs for train [default: 32]
+  --epochs EPOCHS       number of epochs for train
   --batch-size BATCH_SIZE
-                        batch size for training [default: 64]
-  --dropout DROPOUT     the probability for dropout (0 = no dropout) [default:
-                        0.1]
+                        batch size for training
   --seed SEED           random seed
-  --log-interval LOG_INTERVAL
-                        report interval [default: 1000]
   --cuda-able           enables cuda
-  --not-by-word         segment sentences not by word
   --save SAVE           path to save the final model
-  --save-epoch          save every epoch
   --data DATA           location of the data corpus
-  --eval-data EVAL_DATA
-                        location of the eval data corpus
-  --proj-share-weight   share linear weight
-  --embs-share-weight
+  --not-share-linear    Share the weight matrix between tgt word
+                        embedding/linear
+  --dropout DROPOUT     the probability for dropout (0 = no dropout)
   --d-model D_MODEL     equal dimension of word embedding dim
-  --d-inner-hid D_INNER_HID
+  --d-ff D_FF           Position-wise Feed-Forward Networks inner layer dim
   --n-head N_HEAD
-  --n-layers N_LAYERS
+  --n-stack-layers N_STACK_LAYERS
   --n-warmup-steps N_WARMUP_STEPS
 ```
-example
-> python3 train.py --proj-share-weight --data data/seq2seq_train.pt --cuda-able --save-epoch --dropout=0.3
 
-### Predict
-```
-python3 predict.py
-```
-You can get [example](https://github.com/ne7ermore/torch_light/blob/master/seq2seq/predict.py#L198)
