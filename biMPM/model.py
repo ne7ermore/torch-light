@@ -326,7 +326,7 @@ class biMPModule(nn.Module):
 
         return all_aware_repres
 
-    def _init_weights_and_bias(self, scope=0.001):
+    def _init_weights_and_bias(self, scope=1.):
         """
         initialise weight and bias
         """

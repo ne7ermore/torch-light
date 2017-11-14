@@ -13,7 +13,7 @@ class FullMatchLay(nn.Module):
         self.mp_dim = mp_dim
 
         self.register_parameter("weight", nn.Parameter(torch.Tensor(mp_dim, cont_dim)))
-        self.weight.data.uniform_(-0.1, 0.1)
+        self.weight.data.uniform_(-1., 1.)
 
     def forward(self, cont_repres, other_cont_first):
         """
@@ -52,7 +52,7 @@ class MaxpoolMatchLay(nn.Module):
         self.mp_dim = mp_dim
 
         self.register_parameter("weight", nn.Parameter(torch.Tensor(mp_dim, cont_dim)))
-        self.weight.data.uniform_(-0.1, 0.1)
+        self.weight.data.uniform_(-1., 1.)
 
     def forward(self, cont_repres, other_cont_repres):
         """
@@ -94,7 +94,7 @@ class AtteMatchLay(nn.Module):
         self.mp_dim = mp_dim
 
         self.register_parameter("weight", nn.Parameter(torch.Tensor(mp_dim, cont_dim)))
-        self.weight.data.uniform_(-0.1, 0.1)
+        self.weight.data.uniform_(-1., 1.)
 
     def forward(self, repres, max_att):
         """
