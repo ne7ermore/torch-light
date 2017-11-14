@@ -1,3 +1,4 @@
+# borrowed from https://github.com/jadore801120/attention-is-all-you-need-pytorch
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -45,7 +46,7 @@ class MultiHeadAtt(nn.Module):
                 nn.Parameter(torch.FloatTensor(n_head, d_model, d_k)))
 
         self.attention = ScaledDotProductAttention(d_k, dropout)
-        self.layer_norm = LayerNorm(d_model)
+        self.lm = LayerNorm(d_model)
         self.w_o = nn.Linear(d_model, d_model, bias=False)
         self.dropout = dropout
 
@@ -71,7 +72,7 @@ class MultiHeadAtt(nn.Module):
         outputs = self.attention(q_s, k_s, v_s, attn_mask.repeat(n_head, 1, 1))
         outputs = torch.cat(torch.split(outputs, bsz, dim=0), dim=-1).view(-1, n_head*d_v)
         outputs = F.dropout(self.w_o(outputs), p=self.dropout).view(bsz, len_q, -1)
-        return self.layer_norm(outputs + residual)
+        return self.lm(outputs + residual)
 
     def _init_weight(self):
         init.xavier_normal(self.w_qs)

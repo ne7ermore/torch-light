@@ -1,3 +1,4 @@
+# borrowed from https://github.com/jadore801120/attention-is-all-you-need-pytorch
 import torch
 import torch.nn as nn
 import torch.nn.init as init
