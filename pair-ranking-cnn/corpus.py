@@ -1,8 +1,6 @@
 import torch
 import argparse
 
-from common.word_filter import *
-from common.segmenter import Jieba
 from utils import prepare, corpora2idx
 import const
 

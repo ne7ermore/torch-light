@@ -5,8 +5,6 @@ import numpy as np
 
 import const
 from module import CNN_Ranking
-from common.segmenter import Jieba
-from common.word_filter import StopwordFilter
 from utils import prepare, corpora2idx
 
 class Predict(object):
