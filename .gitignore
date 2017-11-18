@@ -2,3 +2,6 @@
 *.pt
 word2vec
 img.py
+base_util
+sftp-config.json
+test.py

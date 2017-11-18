@@ -26,6 +26,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [bilstm-crf-cut](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 * [biLSTM-CRF-ner](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
 * [LSTM-CNNs-CRF](https://github.com/ne7ermore/torch_light/tree/master/LSTM-CNNs-CRF)
+* [Chinese Poetry NLG](https://github.com/ne7ermore/torch_light/tree/master/ch-poetry-nlg)
 
 #### 3. Special thing
 * [customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
