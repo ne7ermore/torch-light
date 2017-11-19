@@ -28,7 +28,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [LSTM-CNNs-CRF](https://github.com/ne7ermore/torch_light/tree/master/LSTM-CNNs-CRF)
 * [Chinese Poetry NLG](https://github.com/ne7ermore/torch_light/tree/master/ch-poetry-nlg)
 
-#### 3. Special thing
+#### 3. Special Things
 * [customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
 
 ## Getting Started
