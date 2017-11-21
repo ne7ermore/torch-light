@@ -69,7 +69,6 @@ class CNN_Ranking(nn.Module):
             enc_outs_left.append(enc_left_)
             enc_outs_right.append(enc_right_)
 
-
         hid_in_left = torch.cat(enc_outs_left, c_idx)
         enc_outs_right = torch.cat(enc_outs_right, c_idx)
 
