@@ -1,7 +1,2 @@
 ## Introduction
-#### Something from NN and marked
-* LSTMCell
-
-## Requirement
-* python 3.5
-* pytorch 0.2.0
+Tool and Toy, feel free to find sth which is help for you :)
