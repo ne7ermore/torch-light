@@ -73,7 +73,8 @@ class CNN_Ranking(nn.Module):
         enc_outs_right = torch.cat(enc_outs_right, c_idx)
 
         transform_left = torch.mm(hid_in_left, self.simi_weight)
-        sims = torch.sum(transform_left * enc_outs_right, dim=c_idx, keepdim=True)
+        sims = torch.sum(torch.mm(transform_left,
+                enc_outs_right.t()), dim=c_idx, keepdim=True)
 
         new_input = torch.cat([hid_in_left, sims, enc_outs_right], c_idx)
 
