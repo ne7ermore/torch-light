@@ -50,5 +50,5 @@ python3 main.py
 
 ## Result
 
-> Acc: 98.6%
+> Acc: 91.6%
 <p align="center"><img width="40%" src="cnn_c.jpg" /></p>

@@ -54,5 +54,5 @@ python3 main.py
 
 ## Result
 
-> Acc: 97%
+> Acc: 88.6%
 <p align="center"><img width="40%" src="lstm_c.jpg" /></p>
