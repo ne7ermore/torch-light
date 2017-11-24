@@ -6,10 +6,10 @@ import torch
 parser = argparse.ArgumentParser(description='CNN text classification')
 parser.add_argument('--lr', type=float, default=0.001,
                     help='initial learning rate [default: 0.001]')
-parser.add_argument('--epochs', type=int, default=32,
-                    help='number of epochs for train [default: 32]')
-parser.add_argument('--batch-size', type=int, default=64,
-                    help='batch size for training [default: 64]')
+parser.add_argument('--epochs', type=int, default=100,
+                    help='number of epochs for train')
+parser.add_argument('--batch-size', type=int, default=16,
+                    help='batch size for training')
 parser.add_argument('--save', type=str, default='./CNN_Text.pt',
                     help='path to save the final model')
 parser.add_argument('--data', type=str, default='./data/corpus.pt',

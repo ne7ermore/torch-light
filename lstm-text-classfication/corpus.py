@@ -60,10 +60,16 @@ class Corpus(object):
         self.l = Labels()
         self.max_len = max_len
 
-    def parse_data(self, _file, is_train=True):
+    def parse_data(self, _file, is_train=True, fine_grained=False):
+        """
+        fine_grained: Whether to use the fine-grained (50-class) version of TREC
+                or the coarse grained (6-class) version.
+        """
         _sents, _labels = [], []
         for sentence in open(_file):
-            label, _words = sentence.strip().split(':', 1)
+            label, _, _words = sentence.replace('\xf0', ' ').partition(' ')
+            label = label.split(":")[0] if not fine_grained else label
+
             words = _words.strip().split()
 
             if len(words) > self.max_len:
@@ -105,6 +111,7 @@ class Corpus(object):
         torch.save(data, self._save_data)
         print('Finish dumping the data to file - [{}]'.format(self._save_data))
         print('words length - [{}]'.format(len(self.w)))
+        print('label size - [{}]'.format(len(self.l)))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='CNN Classification')
