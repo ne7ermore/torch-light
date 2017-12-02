@@ -8,7 +8,7 @@ def word2idx(sents, word2idx):
 class Dictionary(object):
     def __init__(self):
         self.word2idx = {
-            UNK: WORD[UNK]
+            WORD[UNK]: UNK
         }
         self.idx = len(self.word2idx)
 

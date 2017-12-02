@@ -20,13 +20,14 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [LSTM Text classfication](https://github.com/ne7ermore/torch_light/tree/master/lstm-text-classfication)
 
 #### 2. Advanced
-* [BiMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
+* [Poetry VAE-NLG](https://github.com/ne7ermore/torch_light/tree/master/vae-nlg)
 * [Seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
-* [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
-* [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 * [BiLSTM CRF NER](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
 * [LSTM CNNs CRF](https://github.com/ne7ermore/torch_light/tree/master/LSTM-CNNs-CRF)
 * [Chinese Poetry NLG](https://github.com/ne7ermore/torch_light/tree/master/ch-poetry-nlg)
+* [BiMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
+* [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
+* [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 
 #### 3. Special Things
 * [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
