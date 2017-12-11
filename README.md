@@ -19,7 +19,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [CNN Text classfication](https://github.com/ne7ermore/torch_light/tree/master/cnn-text-classfication)
 * [LSTM Text classfication](https://github.com/ne7ermore/torch_light/tree/master/lstm-text-classfication)
 
-#### 2. Advanced
+#### 2. NLP
 * [Poetry VAE-NLG](https://github.com/ne7ermore/torch_light/tree/master/vae-nlg)
 * [Seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
 * [BiLSTM CRF NER](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
@@ -29,7 +29,10 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
 * [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 
-#### 3. Special Things
+#### 3. Vision
+* [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)
+
+#### 4. Special Things
 * [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
 
 ## Getting Started
