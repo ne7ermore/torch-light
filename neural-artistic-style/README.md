@@ -13,12 +13,12 @@ Module implemention from "[A Neural Algorithm of Artistic Style](https://arxiv.o
 
 ### Van Gogh
 
-<p align="center"><img width="100%" src="images/night.jpg" /></p>
-<p align="center"><img width="100%" src="images/Tuebingen_Neckarfront.jpg" /></p>
-<p align="center"><img width="100%" src="images/tn.jpg" /></p>
+<p align="center"><img width="80%" src="images/night.jpg" /></p>
+<p align="center"><img width="80%" src="images/Tuebingen_Neckarfront.jpg" /></p>
+<p align="center"><img width="80%" src="images/tn.jpg" /></p>
 
 ### Picasso
 
-<p align="center"><img width="100%" src="images/picasso.jpg" /></p>
-<p align="center"><img width="100%" src="images/dancing.jpg" /></p>
-<p align="center"><img width="100%" src="images/dc.jpg" /></p>
+<p align="center"><img width="80%" src="images/picasso.jpg" /></p>
+<p align="center"><img width="80%" src="images/dancing.jpg" /></p>
+<p align="center"><img width="80%" src="images/dc.jpg" /></p>
