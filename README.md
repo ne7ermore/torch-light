@@ -32,6 +32,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 #### 3. Vision
 * [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)
 * [Neural Style](https://github.com/ne7ermore/torch_light/tree/master/neural-artistic-style)
+* [DC Gan](https://github.com/ne7ermore/torch_light/tree/master/dc-gan)
 
 #### 4. Special Things
 * [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)

@@ -7,7 +7,6 @@ Module implemention from "[A Neural Algorithm of Artistic Style](https://arxiv.o
 * pytorch 0.2.0
 * numpy 1.13.1
 * PIL
-* matplotlib
 
 ## Example
 
