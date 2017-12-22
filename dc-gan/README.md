@@ -2,6 +2,8 @@
 Deep Convolutional Generative Adversarial Networks.
 Module implemention from "[Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)". <br>
 
+<p align="center"><img width="80%" src="images/struct.png" /></p>
+
 ## Requirement
 * python 3.5
 * pytorch 0.2.0
