@@ -98,7 +98,7 @@ def train():
         dec_hidden = repackage_hidden(dec_hidden)
 
         target, latent_loss, enc_hidden, dec_hidden = vae(enc_input, dec_input, enc_hidden, dec_hidden)
-        loss = criterion(target, label.contiguous().view(-1))
+        loss = criterion(target, label.contiguous().view(-1)) + latent_loss
 
         loss.backward()
         optimizer.clip_grad_norm()
