@@ -36,7 +36,7 @@ class Data_loader(object):
 
         if self._step == self._stop_step:
             self._step = 0
-            raise StopIteration()       
+            raise StopIteration()
 
         _start = self._step*self._batch_size
         self._step += 1
@@ -45,8 +45,6 @@ class Data_loader(object):
 
     def gen_image(self, g_out, epoch):
         torchvision.utils.save_image(g_out.data, 'images/epoch_{}.jpg'.format(epoch))
-
-
 
 if __name__ == "__main__":
     dl = Data_loader('data/', 64, 64, True)

@@ -123,9 +123,10 @@ try:
         print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(epoch, time.time() - epoch_start_time, loss))
         print('-' * 90)
         vae.eval()
-        portry = vae.generate(20)
-        print("portry generation - [{}]".format(portry))
-        print('-' * 90)
+        for _ in range(10):
+            portry = vae.generate(20)
+            print("portry generation - [{}]".format(portry))
+            print('-' * 90)
 
 except KeyboardInterrupt:
     print("-"*90)

@@ -11,7 +11,7 @@ parser.add_argument('--style_layers', type=str, default="relu1_1,relu2_1,relu3_1
 parser.add_argument('--content_layers', type=str, default="relu4_2")
 parser.add_argument('--model', type=str, default="vgg19")
 parser.add_argument('--style_img', type=str, default="night.jpg")
-parser.add_argument('--content_img', type=str, default="dancing.jpg")
+parser.add_argument('--content_img', type=str, default="WechatIMG742.jpeg")
 parser.add_argument('--alpha', type=float, default=1.)
 parser.add_argument('--beta', type=float, default=1e3)
 
@@ -75,10 +75,9 @@ def closure():
 
     if n_epoch[0] % 30 == 0:
         print('epochs: {}, loss: {}'.format(n_epoch[0], _loss.data[0]))
+        ip.tensor2img(out_param.data.cpu().squeeze(), n_epoch[0])
 
     return _loss
 
 while n_epoch[0] < args.epochs:
     optimizer.step(closure)
-
-ip.tensor2img(out_param.data.cpu().squeeze())

@@ -90,7 +90,6 @@ model = Model(args)
 if use_cuda:
    model = model.cuda()
 
-criterion = torch.nn.CrossEntropyLoss()
 optimizer = ScheduledOptim(
             torch.optim.Adam(model.parameters(), lr=args.lr,
                 betas=(0.9, 0.98), eps=1e-09, weight_decay=args.l2),
@@ -109,7 +108,7 @@ accuracy = []
 
 def evaluate():
     model.eval()
-     corrects = eval_loss = 0
+    corrects = eval_loss = 0
 
     for word, char, label in tqdm(validation_data, mininterval=0.2,
                 desc='Evaluate Processing', leave=False):

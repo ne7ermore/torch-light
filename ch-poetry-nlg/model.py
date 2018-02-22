@@ -43,5 +43,5 @@ class Model(nn.Module):
         lstm_out, hidden = self.lstm(encode, hidden)
         lstm_out = F.dropout(lstm_out, p=self.dropout)
         out = self.lr(lstm_out.contiguous().view(-1, lstm_out.size(2)))
-        return F.log_softmax(out), hidden
+        return F.log_softmax(out, dim=-1), hidden
 

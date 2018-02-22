@@ -26,10 +26,10 @@ class C_LSTMCell(nn.Module):
 
         return hy, cy
 
-class C_LSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers=1, dropout=None):
-        super().__init__()
+# class C_LSTM(nn.Module):
+#     def __init__(self, input_size, hidden_size, num_layers=1, dropout=None):
+#         super().__init__()
 
-        for layer in range(num_layers):
-            layer_isz = input_size if layer == 0 else layer_isz = hidden_size
-            w_ih =
+#         for layer in range(num_layers):
+#             layer_isz = input_size if layer == 0 else layer_isz = hidden_size
+#             w_ih =

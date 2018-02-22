@@ -47,7 +47,7 @@ class Highway(nn.Module):
 if __name__ == "__main__":
     from torch.autograd import Variable
 
-    x = Variable(torch.randn((2, 3)))
+    x = Variable(torch.randn((2, 4, 3)))
     hw = Highway(2, 3, F.relu)
 
     print(hw(x))

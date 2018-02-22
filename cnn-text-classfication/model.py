@@ -13,13 +13,6 @@ class CNN_Text(nn.Module):
         self.encoders = []
         for i, filter_size in enumerate(self.filter_sizes):
             enc_attr_name = "encoder_%d" % i
-            # temp = nn.Sequential(
-            #     nn.Conv2d(in_channels=1,
-            #                 out_channels=self.kernel_num,
-            #                 kernel_size=(filter_size, self.embed_dim)),
-            #     nn.BatchNorm2d(self.kernel_num))
-            # self.__setattr__(enc_attr_name, temp)
-
             self.__setattr__(enc_attr_name,
                             nn.Conv2d(in_channels=1,
                             out_channels=self.kernel_num,

@@ -60,6 +60,8 @@ training_data = DataLoader(
 import model
 
 rnn = model.Model(args)
+if use_cuda:
+    rnn = rnn.cuda()
 
 optimizer = torch.optim.Adam(rnn.parameters(), lr=args.lr)
 criterion = torch.nn.CrossEntropyLoss()
