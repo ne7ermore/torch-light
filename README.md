@@ -20,6 +20,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [LSTM Text classfication](https://github.com/ne7ermore/torch_light/tree/master/lstm-text-classfication)
 
 #### 2. NLP
+* [Image-Cap](https://github.com/ne7ermore/torch_light/tree/master/Image-Cap)
 * [Poetry VAE-NLG](https://github.com/ne7ermore/torch_light/tree/master/vae-nlg)
 * [Seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
 * [BiLSTM CRF NER](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
