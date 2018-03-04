@@ -1,5 +1,6 @@
 import json
 import re
+import os
 
 import torch
 
@@ -85,7 +86,8 @@ class Captions(object):
             if len(words) > max_len:
                 cut_counts[0] += 1
                 words = words[:max_len]
-            words = words + [EOS]
+            words = words + [WORD[EOS]]
+
             return words
 
         caps = json.loads(next(open(cap_file)))
@@ -125,4 +127,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Captions(args.cap_path)
-

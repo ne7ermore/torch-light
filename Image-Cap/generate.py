@@ -1,3 +1,5 @@
+import json
+
 import torch
 from torch.autograd import Variable
 from torchvision import transforms
@@ -5,6 +7,7 @@ from torchvision import transforms
 from PIL import Image
 
 import model
+from caption import normalizeString
 
 class Gener(object):
     def __init__(self, model_source, img_size=299):
@@ -26,31 +29,77 @@ class Gener(object):
         actor = actor.cuda()
 
         self.actor = actor.eval()
-        self.encode = model.Encode(True)
 
         self._encode = transforms.Compose([
                             transforms.Resize(img_size),
-                            transforms.RandomCrop(img_size),
+                            transforms.CenterCrop(img_size),
                             transforms.ToTensor()
                         ])
+
+        self.max_len = args.max_len
 
     def Speak(self, img):
         enc = self.enc_img(img)
         hidden = self.actor.feed_enc(enc)
-        _, words = self.actor(hidden)
+        _, words = self.actor.speak(hidden)
 
         words = words.data.tolist()[0]
 
-        return [self.idx2word[idx] for idx in words[1:]]
+        s = ""
+        for idx in words[1:]:
+            s += self.idx2word[idx]
+            s += " "
+
+            if idx == 3: break
+
+        return s
 
     def enc_img(self, imgs, path="data/val2017/"):
         tensors = [self._encode(Image.open(path + img_name).convert('RGB')).unsqueeze(0) for img_name in imgs]
         v = Variable(torch.cat(tensors, 0), volatile=True)
         v = v.cuda()
+        return self.actor.encode(v)
 
-        return self.encode(v)[0]
+    def get_imgs(self):
+        def _cut(s, max_len):
+            words = [w for w in normalizeString(s).strip().split()]
+            if len(words) > max_len:
+                words = words[:max_len]
+            return words
+
+        caps = json.loads(next(open("data/captions_val2017.json")))
+        images, annotations = caps["images"], caps["annotations"]
+        img_dict = {img["id"]: img["file_name"] for img in images}
+
+        imgs, labels = [], []
+        for anno in annotations:
+            imgs.append(img_dict[anno["image_id"]])
+            labels.append(_cut(anno["caption"], self.max_len))
+
+        return imgs, labels
 
 if __name__ == "__main__":
-    G = Gener("imgcapt_2.pt")
+    G = Gener("imgcapt_v2_8.pt")
 
-    print(G.Speak(["000000580294.jpg", "000000580294.jpg"]))
+    # print(G.Speak(["000000435299.jpg", "000000188689.jpg"]))
+    # print(G.Speak(["000000188689.jpg", "000000188689.jpg"]))
+    # print(G.Speak(["000000190236.jpg", "000000188689.jpg"]))
+    # print(G.Speak(["000000532058.jpg", "000000188689.jpg"]))
+    # print(G.Speak(["000000481404.jpg", "000000188689.jpg"]))
+    # print(G.Speak(["000000256407.jpg", "000000188689.jpg"]))
+    # print(G.Speak(["000000321557.jpg", "000000188689.jpg"]))
+
+    # print(G.Speak(["000000322141.jpg", "000000322141.jpg"]))
+    # print(G.Speak(["000000399932.jpg", "000000322141.jpg"]))
+    imgs, labels = G.get_imgs()
+
+    count = 0
+    f = 200
+    for img, l in zip(imgs[f:], labels[f:]):
+        count += 1
+        print(img)
+        print(l)
+        print(G.Speak([img, imgs[0]]))
+        print("="*50)
+
+        if count == 50: break

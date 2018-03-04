@@ -8,30 +8,30 @@ class MiddleDataHandler(object):
     def __init__(self):
         self.pk = pickle
 
-    def save(self, obj, file_):
+    def save(self, obj, _file):
         """
         args:
             obj: dict
-            file_: the file to save obj
+            _file: the file to save obj
         """
-        self.pk.dump(obj, open(file_, "wb"), True)
+        self.pk.dump(obj, open(_file, "wb"), True)
 
-    def load(self, file_):
+    def load(self, _file):
         """
         args:
-            file_: load dict from the file
+            _file: load dict from the file
 
         return:
             obj
         """
-        return self.pk.load(open(file_, "rb"))
+        return self.pk.load(open(_file, "rb"))
 
-def load_pre_w2c(file_, dict_):
+def load_pre_w2c(_file, _dict):
     """
     load pre-train word2vec form file
     args:
-        file_: word2vec file
-        dict_: dictionary: map word to index, middle data which is for train
+        _file: word2vec file
+        _dict: dictionary: map word to index, middle data which is for train
 
     return:
         word map from obj to vec
@@ -44,7 +44,7 @@ def load_pre_w2c(file_, dict_):
     w2c_dict = {}
 
     # load and check length of vec
-    for line in open(file_):
+    for line in open(_file):
         temp = line.strip().split(" ")
 
         # discard first line

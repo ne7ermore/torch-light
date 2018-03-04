@@ -1,9 +1,11 @@
 from torch.optim import Adam
+import torch
 
 class Optim(object):
-    def __init__(self, params, lr, is_pre, new_lr=0.0):
+    def __init__(self, params, lr, is_pre, grad_clip, new_lr=0.0):
         self.optimizer = Adam(params, lr=lr, betas=(0.9, 0.98), eps=1e-09)
-
+        self.grad_clip = grad_clip
+        self.params = params
         if is_pre:
             self.step = self.pre_step
         else:
@@ -25,6 +27,9 @@ class Optim(object):
 
     def zero_grad(self):
         self.optimizer.zero_grad()
+
+    def clip_grad_norm(self):
+        torch.nn.utils.clip_grad_norm(self.params, self.grad_clip)
 
     def update_learning_rate(self):
         for param_group in self.optimizer.param_groups:

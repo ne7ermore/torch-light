@@ -48,11 +48,24 @@ def rouge_l(evals, refs):
         scores.append(f_lcs)
 
     scores = np.asarray(scores, dtype=np.float32)
+    scores = np.repeat(scores[:, np.newaxis], evals.shape[1], 1)
     scores = Variable(torch.from_numpy(scores))
 
     if use_cuda: scores = scores.cuda()
 
     return scores
+
+def mask_score(props, words, scores):
+    assert words.size() == scores.size()
+
+    feats = props.size(2)
+    mask = (words > 0).float()
+    masked_ss = (scores*mask).view(-1, 1)
+    masked_ss = masked_ss.repeat(1, feats)
+    props = props.view(-1, feats)
+
+    return props*masked_ss
+
 
 if __name__ == '__main__':
     import torch
@@ -62,3 +75,9 @@ if __name__ == '__main__':
     data = data.cuda()
     label = label.cuda()
     print(rouge_l(data, label))
+
+    props = torch.randn(16,17,256)
+    words = torch.LongTensor([[i for i in range(16, -1, -1)] for _ in range(16)])
+    scores = torch.randn(16,17)
+
+    print(mask_score(props, words, scores))

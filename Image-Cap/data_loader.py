@@ -24,7 +24,7 @@ class Data_loader(object):
 
         self._encode = transforms.Compose([
                             transforms.Resize(img_size),
-                            transforms.RandomCrop(img_size),
+                            transforms.CenterCrop(img_size),
                             transforms.ToTensor()
                         ])
 
@@ -62,7 +62,9 @@ if __name__ == "__main__":
                   data['train']['imgs'],
                   data['train']['captions'],
                   16,batch_size=2,is_cuda=True)
+    print(training_data.sents_size)
+    img, labels = next(training_data)
 
-    imgs, _ = next(training_data)
-
-    print(imgs)
+    id2word = {v: k for k, v in data["dict"].items()}
+    # print(img)
+    print([id2word[_id] for _id in labels[1].data.tolist()])
