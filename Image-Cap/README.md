@@ -11,24 +11,24 @@ Module implemention from "[Actor-Critic Sequence Training for Image Captioning](
 ## Example
 
 <p align="center">My caption: vase with a flower in it sitting on a table.</p>
-<p align="center"><img src="example/000000249025.jpg" /></p>
+<p align="center"><img src="result/000000249025.jpg" /></p>
 
 ***
 
 <p align="center">My caption: cat is laying on a couch with a stuffed animal.</p>
-<p align="center"><img src="example/000000046378.jpg" /></p>
+<p align="center"><img src="result/000000046378.jpg" /></p>
 
 ***
 
 <p align="center">My caption: city street filled with lots of tall buildings.</p>
-<p align="center"><img src="example/000000221754.jpg" /></p>
+<p align="center"><img src="result/000000221754.jpg" /></p>
 
 ***
 
 <p align="center">My caption: desk with a computer and a laptop on it.</p>
-<p align="center"><img src="example/000000063740.jpg" /></p>
+<p align="center"><img src="result/000000063740.jpg" /></p>
 
 ***
 
 <p align="center">My caption: man wearing a black jacket and a white shirt.</p>
-<p align="center"><img src="example/000000228214.jpg" /></p>
+<p align="center"><img src="result/000000228214.jpg" /></p>
