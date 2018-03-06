@@ -79,7 +79,7 @@ class Gener(object):
         return imgs, labels
 
 if __name__ == "__main__":
-    G = Gener("imgcapt_v2_8.pt")
+    G = Gener("imgcapt_v2_12.pt")
 
     # print(G.Speak(["000000435299.jpg", "000000188689.jpg"]))
     # print(G.Speak(["000000188689.jpg", "000000188689.jpg"]))
