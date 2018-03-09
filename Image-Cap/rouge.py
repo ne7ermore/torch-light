@@ -39,7 +39,7 @@ def rouge_l(evals, refs):
     scores = []
     for eva, ref in zip(evals, refs):
         same_len, eva_len, ref_len = map(float,
-                _lcs(eva[np.where(eva>PAD)], ref[np.where(ref>PAD)]))
+                _lcs(eva, ref[np.where(ref>PAD)]))
 
         r_lcs, p_lcs = same_len/ref_len, same_len/eva_len
 
