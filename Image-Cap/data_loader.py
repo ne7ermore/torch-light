@@ -39,9 +39,10 @@ class Data_loader(object):
             return v
 
         def label2variable(labels):
-            _labels = np.array([l + [PAD] * (self._max_len - len(l)) for l in labels])
+            """maybe sth change between Pytorch versions, add func long() for compatibility
+            """
 
-            # maybe sth change between Pytorch versions, add func long() for compatibility
+            _labels = np.array([l + [PAD] * (self._max_len - len(l)) for l in labels])
             _labels = Variable(torch.from_numpy(_labels), volatile=self.evaluation).long()
             if self._is_cuda: _labels = _labels.cuda()
             return _labels
