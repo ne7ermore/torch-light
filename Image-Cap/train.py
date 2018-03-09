@@ -109,9 +109,8 @@ def fix_variable(varias):
 
 def pre_train_actor():
     total_loss = 0.
-    # for imgs, labels in tqdm(training_data,
-    #         mininterval=1, desc="Pre-train Actor", leave=False):
-    for imgs, labels in training_data:
+    for imgs, labels in tqdm(training_data,
+            mininterval=1, desc="Pre-train Actor", leave=False):
         optim_pre_A.zero_grad()
 
         enc = actor.encode(imgs)

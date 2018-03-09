@@ -40,7 +40,9 @@ class Data_loader(object):
 
         def label2variable(labels):
             _labels = np.array([l + [PAD] * (self._max_len - len(l)) for l in labels])
-            _labels = Variable(torch.from_numpy(_labels), volatile=self.evaluation)
+
+            # maybe sth change between Pytorch versions, add func long() for compatibility
+            _labels = Variable(torch.from_numpy(_labels), volatile=self.evaluation).long()
             if self._is_cuda: _labels = _labels.cuda()
             return _labels
 
@@ -64,7 +66,7 @@ if __name__ == "__main__":
                   16,batch_size=2,is_cuda=True)
     print(training_data.sents_size)
     img, labels = next(training_data)
-
+    print(labels)
     id2word = {v: k for k, v in data["dict"].items()}
     # print(img)
     print([id2word[_id] for _id in labels[1].data.tolist()])
