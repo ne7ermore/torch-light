@@ -34,7 +34,7 @@ if use_cuda:
 ################################################################################
 try:
     import tensorflow as tf
-    global tf_step;tf_step = 0
+    tf_step = 0
 except ImportError:
     tf = None
 
