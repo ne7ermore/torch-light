@@ -1,6 +1,7 @@
 import argparse
 
 parser = argparse.ArgumentParser(description='Image Cation')
+parser.add_argument('--logdir', type=str, default='tb_logdir')
 parser.add_argument('--seed', type=int, default=1111)
 parser.add_argument('--unuse_cuda', action='store_true')
 parser.add_argument('--path', type=str, default='data/')
@@ -27,6 +28,23 @@ use_cuda = torch.cuda.is_available() and not args.unuse_cuda
 
 if use_cuda:
     torch.cuda.manual_seed(args.seed)
+
+# ##############################################################################
+# Tensorboard
+################################################################################
+try:
+    import tensorflow as tf
+    global tf_step;tf_step = 0
+except ImportError:
+    tf = None
+
+tf_summary_writer = tf and tf.summary.FileWriter(args.logdir)
+
+def add_summary_value(key, value):
+    global tf_step
+
+    summary = tf.Summary(value=[tf.Summary.Value(tag=key, simple_value=value)])
+    tf_summary_writer.add_summary(summary, tf_step)
 
 # ##############################################################################
 # Load data
@@ -86,6 +104,7 @@ optim_C = Optim(critic.parameters(), args.lr, False, args.new_lr, args.grad_clip
 
 criterion_A = torch.nn.CrossEntropyLoss(ignore_index=PAD)
 criterion_C = torch.nn.MSELoss()
+criterion_AC = model.RewardCriterion()
 
 if use_cuda:
     actor = actor.cuda()
@@ -109,6 +128,7 @@ def fix_variable(varias):
 
 def pre_train_actor():
     total_loss = 0.
+    global tf_step
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Pre-train Actor", leave=False):
         optim_pre_A.zero_grad()
@@ -123,6 +143,12 @@ def pre_train_actor():
         optim_pre_A.clip_grad_norm()
         optim_pre_A.step()
         total_loss += loss.data
+        if tf is not None:
+            add_summary_value("pre-train actor loss", loss.data[0])
+            tf_step += 1
+
+            if tf_step % 100 == 0:
+                tf_summary_writer.flush()
 
     return total_loss[0]/training_data.sents_size
 
@@ -130,6 +156,7 @@ def pre_train_critic():
     iterations, total_loss = 0, .0
     actor.eval()
     critic.train()
+    global tf_step
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Pre-train Critic", leave=False):
         optim_pre_C.zero_grad()
@@ -155,6 +182,12 @@ def pre_train_critic():
         optim_pre_C.step()
 
         iterations += 1
+        if tf is not None:
+            add_summary_value("pre-train critic loss", loss.data[0])
+            tf_step += 1
+
+            if tf_step % 100 == 0:
+                tf_summary_writer.flush()
 
         if iterations == args.iterations: break
 
@@ -164,6 +197,7 @@ def train_actor_critic():
     loss_A = loss_C = .0
     actor.train()
     critic.train()
+    global tf_step
 
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Actor-Critic Training", leave=False):
@@ -190,13 +224,22 @@ def train_actor_critic():
         optim_C.clip_grad_norm()
         optim_C.step()
 
-        _g = mask_score(props_A, words_A[:, 1:], scores_A-scores_C)
-        loss_a = criterion_A(_g, labels.view(-1))
+        _, sample_words, sample_props = actor.speak(hidden_A)
+        loss_a, reward = criterion_AC(sample_props, sample_words, scores_C-scores_A)
         loss_a.backward()
         loss_A += loss_a.data
 
         optim_A.clip_grad_norm()
         optim_A.step()
+
+        if tf is not None:
+            add_summary_value("train critic loss", loss_c.data[0])
+            add_summary_value("train actor loss", loss_a.data[0])
+            add_summary_value("train actor reward", reward.data[0])
+            tf_step += 1
+
+            if tf_step % 100 == 0:
+                tf_summary_writer.flush()
 
     loss_A = loss_A[0]/training_data.sents_size
     loss_C = loss_C[0]/training_data.sents_size
@@ -211,7 +254,7 @@ def eval():
         enc = actor.encode(imgs)
 
         hidden = actor.feed_enc(enc)
-        props, words = actor.speak(hidden)
+        props, words, _ = actor.speak(hidden)
 
         loss = criterion_A(props.view(-1, props.size(2)), labels.view(-1))
         scores = rouge_l(words, labels)
@@ -229,6 +272,7 @@ try:
     s_time = time.time()
     print("="*40 + "Pre-train Actor" + "="*40)
     actor.train()
+    tf_step = 0
     for step in range(args.actor_epochs):
         loss = pre_train_actor()
         print("-"*20 + "epoch-{} | loss: {:.4f} | time: {:2.2f}".format(step, loss, time.time()-s_time) + "-"*20)
@@ -246,11 +290,13 @@ try:
         }
         torch.save(model_source, args.save.format("pret-actor_" + str(step)))
 
+    tf_step = 0
     print("="*40 + "Pre-train Critic" + "="*40)
     loss = pre_train_critic()
     print("-"*20 + "pre-train critic | loss: {:.4f} | time: {:2.2f}".format(loss, time.time()-s_time) + "-"*20)
     s_time = time.time()
 
+    tf_step = 0
     print("="*40 + "Actor-Critic Training" + "="*40)
     for step in range(args.epochs):
         loss_A, loss_C = train_actor_critic()

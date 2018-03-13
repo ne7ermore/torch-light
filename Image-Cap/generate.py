@@ -41,7 +41,7 @@ class Gener(object):
     def Speak(self, img):
         enc = self.enc_img(img)
         hidden = self.actor.feed_enc(enc)
-        _, words = self.actor.speak(hidden)
+        _, words, _ = self.actor.speak(hidden)
 
         words = words.data.tolist()[0]
 
@@ -79,7 +79,7 @@ class Gener(object):
         return imgs, labels
 
 if __name__ == "__main__":
-    G = Gener("imgcapt_v2_12.pt")
+    G = Gener("imgcapt_v2_0.pt")
 
     # print(G.Speak(["000000435299.jpg", "000000188689.jpg"]))
     # print(G.Speak(["000000188689.jpg", "000000188689.jpg"]))

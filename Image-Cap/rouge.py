@@ -49,7 +49,7 @@ def rouge_l(evals, refs):
 
     scores = np.asarray(scores, dtype=np.float32)
     scores = np.repeat(scores[:, np.newaxis], evals.shape[1], 1)
-    scores = Variable(torch.from_numpy(scores))
+    scores = Variable(torch.from_numpy(scores), requires_grad=False)
 
     if use_cuda: scores = scores.cuda()
 
@@ -70,14 +70,31 @@ def mask_score(props, words, scores):
 if __name__ == '__main__':
     import torch
     from torch.autograd import Variable
+    import torch.nn.functional as F
+    from model import RewardCriterion
+
     data = Variable(torch.LongTensor([[3,1,2,3,1,0],[2,3,4,4,0,0]]))
     label = Variable(torch.LongTensor([[3,1,2,3,1,0],[2,3,2,3,1,0]]))
+    bl = Variable(torch.LongTensor([[3,1,2,3,2,0],[1,3,4,4,0,0]]))
     data = data.cuda()
     label = label.cuda()
-    print(rouge_l(data, label))
+    bl = bl.cuda()
+
+    reward = rouge_l(bl, label) - rouge_l(data, label)
+    print(reward)
 
     props = torch.randn(16,17,256)
     words = torch.LongTensor([[i for i in range(16, -1, -1)] for _ in range(16)])
     scores = torch.randn(16,17)
 
     print(mask_score(props, words, scores))
+
+    crit = RewardCriterion()
+    crit = crit.cuda()
+
+    props = F.log_softmax(Variable(torch.randn(2,6,256), requires_grad=True).cuda(), dim=-1)
+    max_props, _ = torch.max(props, -1)
+
+    loss, reward = crit(max_props, data, reward)
+    print(loss)
+    print(reward)

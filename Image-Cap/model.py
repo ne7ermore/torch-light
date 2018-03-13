@@ -10,6 +10,22 @@ import numpy as np
 
 from const import BOS, PAD
 
+class RewardCriterion(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, props, words, scores):
+        assert words.size() == scores.size()
+
+        mask = (words > 0).float()
+        masked_ss = scores*mask
+
+        output = masked_ss*props
+        output = torch.sum(output) / torch.sum(mask)
+        reward = torch.sum(masked_ss) / torch.sum(mask)
+
+        return output, reward
+
 class Attention(nn.Module):
     def __init__(self, hsz):
         super().__init__()
@@ -102,20 +118,22 @@ class Actor(nn.Module):
         emb_enc = self.lookup_table(word)
         hiddens = [hidden[0].squeeze()]
         attn = torch.transpose(hidden[0], 0, 1)
-        outputs, words = [], []
+        outputs, words, sample_props = [], [], []
 
         for _ in range(self.max_len):
             _, hidden = self.rnn(torch.cat([emb_enc, attn], -1), hidden)
-            props = self.out(hidden[0][-1])
+            props = F.log_softmax(self.out(hidden[0][-1]), dim=-1)
             attn = self.attn(hiddens, hidden[0][-1])
 
-            _, word = torch.max(props, -1, keepdim=True)
+            _props = props.data.clone().exp()
+            word = Variable(_props.multinomial(1), requires_grad=False)
             emb_enc = self.lookup_table(word)
 
             words.append(word)
             outputs.append(props.unsqueeze(1))
+            sample_props.append(props.gather(1, word))
 
-        return F.log_softmax(torch.cat(outputs, 1), dim=-1), torch.cat(words, 1)
+        return F.log_softmax(torch.cat(outputs, 1), dim=-1), torch.cat(words, 1), torch.cat(sample_props, 1)
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)
