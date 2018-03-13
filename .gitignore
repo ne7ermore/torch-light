@@ -6,4 +6,4 @@ base_util
 sftp-config.json
 test.py
 example
-Image-Cap/generate.py
+ignore*.py
