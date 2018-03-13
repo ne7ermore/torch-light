@@ -54,7 +54,7 @@ class Gener(object):
 
         return s
 
-    def enc_img(self, imgs, path="data/val2017/"):
+    def enc_img(self, imgs, path="data/train2017/"):
         tensors = [self._encode(Image.open(path + img_name).convert('RGB')).unsqueeze(0) for img_name in imgs]
         v = Variable(torch.cat(tensors, 0), volatile=True)
         v = v.cuda()
@@ -67,7 +67,7 @@ class Gener(object):
                 words = words[:max_len]
             return words
 
-        caps = json.loads(next(open("data/captions_val2017.json")))
+        caps = json.loads(next(open("data/captions_train2017.json")))
         images, annotations = caps["images"], caps["annotations"]
         img_dict = {img["id"]: img["file_name"] for img in images}
 
@@ -79,7 +79,7 @@ class Gener(object):
         return imgs, labels
 
 if __name__ == "__main__":
-    G = Gener("imgcapt_v2_0.pt")
+    G = Gener("imgcapt_v2_2.pt")
 
     # print(G.Speak(["000000435299.jpg", "000000188689.jpg"]))
     # print(G.Speak(["000000188689.jpg", "000000188689.jpg"]))

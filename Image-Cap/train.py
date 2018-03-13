@@ -128,7 +128,7 @@ def fix_variable(varias):
 
 def pre_train_actor():
     total_loss = 0.
-    global tf_step
+    if tf: global tf_step
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Pre-train Actor", leave=False):
         optim_pre_A.zero_grad()
@@ -156,7 +156,7 @@ def pre_train_critic():
     iterations, total_loss = 0, .0
     actor.eval()
     critic.train()
-    global tf_step
+    if tf: global tf_step
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Pre-train Critic", leave=False):
         optim_pre_C.zero_grad()
@@ -197,7 +197,7 @@ def train_actor_critic():
     loss_A = loss_C = .0
     actor.train()
     critic.train()
-    global tf_step
+    if tf: global tf_step
 
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Actor-Critic Training", leave=False):
@@ -272,7 +272,7 @@ try:
     s_time = time.time()
     print("="*40 + "Pre-train Actor" + "="*40)
     actor.train()
-    tf_step = 0
+    if tf: tf_step = 0
     for step in range(args.actor_epochs):
         loss = pre_train_actor()
         print("-"*20 + "epoch-{} | loss: {:.4f} | time: {:2.2f}".format(step, loss, time.time()-s_time) + "-"*20)
@@ -290,13 +290,13 @@ try:
         }
         torch.save(model_source, args.save.format("pret-actor_" + str(step)))
 
-    tf_step = 0
+    if tf: tf_step = 0
     print("="*40 + "Pre-train Critic" + "="*40)
     loss = pre_train_critic()
     print("-"*20 + "pre-train critic | loss: {:.4f} | time: {:2.2f}".format(loss, time.time()-s_time) + "-"*20)
     s_time = time.time()
 
-    tf_step = 0
+    if tf: tf_step = 0
     print("="*40 + "Actor-Critic Training" + "="*40)
     for step in range(args.epochs):
         loss_A, loss_C = train_actor_critic()

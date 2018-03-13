@@ -1,5 +1,5 @@
 ## Introduction
-Image Captioning.
+Image captioning with reinforcement learning.
 Module implemention from "[Actor-Critic Sequence Training for Image Captioning](https://arxiv.org/abs/1706.09601)". <br>
 
 ## Requirement
