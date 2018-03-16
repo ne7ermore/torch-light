@@ -57,14 +57,9 @@ def rouge_l(evals, refs):
 
 def mask_score(props, words, scores):
     assert words.size() == scores.size()
-
-    feats = props.size(2)
     mask = (words > 0).float()
-    masked_ss = (scores*mask).view(-1, 1)
-    masked_ss = masked_ss.repeat(1, feats)
-    props = props.view(-1, feats)
 
-    return props*masked_ss
+    return props*scores*mask
 
 
 if __name__ == '__main__':
@@ -81,7 +76,7 @@ if __name__ == '__main__':
     bl = bl.cuda()
 
     reward = rouge_l(bl, label) - rouge_l(data, label)
-    print(reward)
+    print(reward[:, 0])
 
     props = torch.randn(16,17,256)
     words = torch.LongTensor([[i for i in range(16, -1, -1)] for _ in range(16)])

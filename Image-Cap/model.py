@@ -118,7 +118,7 @@ class Actor(nn.Module):
         emb_enc = self.lookup_table(word)
         hiddens = [hidden[0].squeeze()]
         attn = torch.transpose(hidden[0], 0, 1)
-        outputs, words, sample_props = [], [], []
+        words, sample_props = [], []
 
         for _ in range(self.max_len):
             _, hidden = self.rnn(torch.cat([emb_enc, attn], -1), hidden)
@@ -130,10 +130,9 @@ class Actor(nn.Module):
             emb_enc = self.lookup_table(word)
 
             words.append(word)
-            outputs.append(props.unsqueeze(1))
             sample_props.append(props.gather(1, word))
 
-        return F.log_softmax(torch.cat(outputs, 1), dim=-1), torch.cat(words, 1), torch.cat(sample_props, 1)
+        return torch.cat(words, 1), torch.cat(sample_props, 1)
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)
@@ -167,6 +166,8 @@ class Critic(nn.Module):
                     dropout=dropout)
         self.out = nn.Linear(self.dec_hsz, vocab_size)
 
+        self.criterion = torch.nn.MSELoss()
+
         self._reset_parameters()
 
     def feed_enc(self, enc):
@@ -182,13 +183,33 @@ class Critic(nn.Module):
         emb_enc = self.lookup_table(inputs[:, :-1])
         rnn_out, _ = self.rnn(emb_enc, hidden)
         rnn_out = rnn_out.contiguous()
-        props = self.out(rnn_out)
-        _, words = torch.max(props, -1)
+        props = F.softmax(self.out(rnn_out), dim=-1)
+        max_props, words = torch.max(props, -1)
 
-        return F.log_softmax(props, dim=-1), words
+        return max_props, words
 
-    def td_error(self, mask_rewards_A, mask_rewards_C, criterion_C):
-        return criterion_C(mask_rewards_C, mask_rewards_A)
+    def _fix_variable(self, varias):
+        _fixed = Variable(varias.data.new(*varias.size()), requires_grad=False)
+        _fixed.data.copy_(varias.data)
+
+        return _fixed
+
+    def td_error(self, reward, props, optim):
+        loss = .0
+
+        for step in range(self.max_len-1):
+            optim.zero_grad()
+
+            _fixed = self._fix_variable(props[:, step+1])
+            _loss = self.criterion(props[:, step], _fixed.add(reward))
+            _loss.backward(retain_graph=True)
+
+            optim.clip_grad_norm()
+            optim.step()
+
+            loss += _loss.data
+
+        return loss
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)

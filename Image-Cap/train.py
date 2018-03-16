@@ -10,7 +10,7 @@ parser.add_argument('--save', type=str, default='imgcapt_v2_{}.pt')
 parser.add_argument('--pre_lr', type=float, default=5e-4)
 parser.add_argument('--lr', type=float, default=5e-5)
 parser.add_argument('--new_lr', type=float, default=5e-6)
-parser.add_argument('--actor_epochs', type=int, default=2)
+parser.add_argument('--actor_epochs', type=int, default=1)
 parser.add_argument('--epochs', type=int, default=40)
 parser.add_argument('--iterations', type=int, default=2000)
 parser.add_argument('--batch_size', type=int, default=32)
@@ -103,7 +103,6 @@ optim_A = Optim(actor.get_trainable_parameters(), args.lr, False, args.new_lr, a
 optim_C = Optim(critic.parameters(), args.lr, False, args.new_lr, args.grad_clip)
 
 criterion_A = torch.nn.CrossEntropyLoss(ignore_index=PAD)
-criterion_C = torch.nn.MSELoss()
 criterion_AC = model.RewardCriterion()
 
 if use_cuda:
@@ -113,21 +112,14 @@ if use_cuda:
 # ##############################################################################
 # Training
 # ##############################################################################
-import time
 from tqdm import tqdm
 
 from torch.autograd import Variable
+import torch.nn.functional as F
 
 from rouge import rouge_l, mask_score
 
-def fix_variable(varias):
-    _fixed = Variable(varias.data.new(*varias.size()), requires_grad=False)
-    _fixed.data.copy_(varias.data)
-
-    return _fixed
-
 def pre_train_actor():
-    total_loss = 0.
     if tf: global tf_step
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Pre-train Actor", leave=False):
@@ -142,7 +134,6 @@ def pre_train_actor():
         loss.backward()
         optim_pre_A.clip_grad_norm()
         optim_pre_A.step()
-        total_loss += loss.data
         if tf is not None:
             add_summary_value("pre-train actor loss", loss.data[0])
             tf_step += 1
@@ -150,10 +141,8 @@ def pre_train_actor():
             if tf_step % 100 == 0:
                 tf_summary_writer.flush()
 
-    return total_loss[0]/training_data.sents_size
-
 def pre_train_critic():
-    iterations, total_loss = 0, .0
+    iterations = 0
     actor.eval()
     critic.train()
     if tf: global tf_step
@@ -163,27 +152,17 @@ def pre_train_critic():
 
         enc = actor.encode(imgs)
         hidden_A = actor.feed_enc(enc)
-        props_A, words_A = actor(hidden_A, labels)
-
-        fixed_props_A = fix_variable(props_A)
+        _, words_A = actor(hidden_A, labels)
 
         hidden_C = critic.feed_enc(enc)
         props_C, words_C = critic(words_A, hidden_C)
 
-        scores_A, scores_C = rouge_l(words_A[:, 1:], labels), rouge_l(words_C, labels)
-        mask_rewards_A = mask_score(fixed_props_A, words_A[:, 1:], scores_A)
-        mask_rewards_C = mask_score(props_C, words_C, scores_C)
-
-        loss = critic.td_error(mask_rewards_A, mask_rewards_C, criterion_C)
-        loss.backward()
-        total_loss += loss.data
-
-        optim_pre_C.clip_grad_norm()
-        optim_pre_C.step()
+        reward = rouge_l(words_A[:, 1:], labels).sub(rouge_l(words_C, labels))[:, 0]
+        loss = critic.td_error(reward, props_C, optim_pre_C)
 
         iterations += 1
         if tf is not None:
-            add_summary_value("pre-train critic loss", loss.data[0])
+            add_summary_value("pre-train critic loss", loss[0])
             tf_step += 1
 
             if tf_step % 100 == 0:
@@ -191,10 +170,7 @@ def pre_train_critic():
 
         if iterations == args.iterations: break
 
-    return total_loss[0]/args.iterations
-
 def train_actor_critic():
-    loss_A = loss_C = .0
     actor.train()
     critic.train()
     if tf: global tf_step
@@ -202,86 +178,63 @@ def train_actor_critic():
     for imgs, labels in tqdm(training_data,
             mininterval=1, desc="Actor-Critic Training", leave=False):
         optim_A.zero_grad()
-        optim_C.zero_grad()
 
         enc = actor.encode(imgs)
         hidden_A = actor.feed_enc(enc)
-        props_A, words_A = actor(hidden_A, labels)
-        fixed_props_A = fix_variable(props_A)
+        _, words_A = actor(hidden_A, labels)
 
         hidden_C = critic.feed_enc(enc)
         props_C, words_C = critic(words_A, hidden_C)
 
         scores_A, scores_C = rouge_l(words_A[:, 1:], labels), rouge_l(words_C, labels)
 
-        fix_mask_rewards_A = mask_score(fixed_props_A, words_A[:, 1:], scores_A)
-        mask_rewards_C = mask_score(props_C, words_C, scores_C)
+        loss_c = critic.td_error(scores_A.sub(scores_C)[:, 0], props_C, optim_C)
 
-        loss_c = critic.td_error(fix_mask_rewards_A, mask_rewards_C, criterion_C)
-        loss_c.backward()
-        loss_C += loss_c.data
+        sample_words, sample_props = actor.speak(hidden_A)
+        sample_score = rouge_l(sample_words, labels)
 
-        optim_C.clip_grad_norm()
-        optim_C.step()
-
-        _, sample_words, sample_props = actor.speak(hidden_A)
-        loss_a, reward = criterion_AC(sample_props, sample_words, scores_C-scores_A)
+        loss_a, reward = criterion_AC(sample_props, sample_words, scores_C-sample_score)
         loss_a.backward()
-        loss_A += loss_a.data
 
         optim_A.clip_grad_norm()
         optim_A.step()
 
         if tf is not None:
-            add_summary_value("train critic loss", loss_c.data[0])
+            add_summary_value("train critic loss", loss_c[0])
             add_summary_value("train actor loss", loss_a.data[0])
             add_summary_value("train actor reward", reward.data[0])
+            add_summary_value("train critic score", scores_C.mean())
+            add_summary_value("train actor score", sample_score.mean())
             tf_step += 1
 
             if tf_step % 100 == 0:
                 tf_summary_writer.flush()
 
-    loss_A = loss_A[0]/training_data.sents_size
-    loss_C = loss_C[0]/training_data.sents_size
-
-    return loss_A, loss_C
-
 def eval():
     actor.eval()
-    eval_loss = eval_score = .0
+    eval_score = .0
     for imgs, labels in tqdm(validation_data,
-            mininterval=1, desc="Actor-Critic Training", leave=False):
+            mininterval=1, desc="Actor-Critic Eval", leave=False):
         enc = actor.encode(imgs)
 
         hidden = actor.feed_enc(enc)
-        props, words, _ = actor.speak(hidden)
+        words, _ = actor.speak(hidden)
 
-        loss = criterion_A(props.view(-1, props.size(2)), labels.view(-1))
         scores = rouge_l(words, labels)
         scores = scores.sum()
 
-        eval_loss += loss.data
         eval_score += scores.data
 
-    eval_loss = eval_loss[0]/validation_data.sents_size
     eval_score = eval_score[0]/validation_data.sents_size
 
-    return eval_loss, eval_score
+    return eval_score
 
 try:
-    s_time = time.time()
     print("="*40 + "Pre-train Actor" + "="*40)
     actor.train()
     if tf: tf_step = 0
     for step in range(args.actor_epochs):
-        loss = pre_train_actor()
-        print("-"*20 + "epoch-{} | loss: {:.4f} | time: {:2.2f}".format(step, loss, time.time()-s_time) + "-"*20)
-        s_time = time.time()
-
-        eval_loss, eval_score = eval()
-        print("-"*20 + "Pre-train Actor epoch-{}-eval | eval loss: {:.4f} | eval score: {:.4f}| time: {:2.2f}".format(step, eval_loss, eval_score, time.time()-s_time) + "-"*20)
-        s_time = time.time()
-
+        pre_train_actor()
         model_state_dict = actor.state_dict()
         model_source = {
             "settings": args,
@@ -292,19 +245,14 @@ try:
 
     if tf: tf_step = 0
     print("="*40 + "Pre-train Critic" + "="*40)
-    loss = pre_train_critic()
-    print("-"*20 + "pre-train critic | loss: {:.4f} | time: {:2.2f}".format(loss, time.time()-s_time) + "-"*20)
-    s_time = time.time()
+    pre_train_critic()
 
     if tf: tf_step = 0
     print("="*40 + "Actor-Critic Training" + "="*40)
     for step in range(args.epochs):
-        loss_A, loss_C = train_actor_critic()
-        print("-"*20 + "epoch-{}-train | actor loss: {:.4f} | critic loss: {:.4f}| time: {:2.2f}".format(step, loss_A, loss_C, time.time()-s_time))
-        s_time = time.time()
-
-        eval_loss, eval_score = eval()
-        print("-"*20 + "epoch-{}-eval | eval loss: {:.4f} | eval score: {:.4f}| time: {:2.2f}".format(step, eval_loss, eval_score, time.time()-s_time) + "-"*20)
+        train_actor_critic()
+        eval_score = eval()
+        print("-"*20 + "epoch-{}-eval | eval score: {:.4f}".format(step, eval_score) + "-"*20)
 
         model_state_dict = actor.state_dict()
         model_source = {
