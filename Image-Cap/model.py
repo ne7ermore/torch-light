@@ -10,21 +10,6 @@ import numpy as np
 
 from const import BOS, PAD
 
-class RewardCriterion(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-    def forward(self, props, words, scores):
-        assert words.size() == scores.size()
-
-        mask = (words > 0).float()
-        masked_ss = scores*mask
-
-        output = masked_ss*props
-        output = torch.sum(output) / torch.sum(mask)
-        reward = torch.sum(masked_ss) / torch.sum(mask)
-
-        return output, reward
 
 class Attention(nn.Module):
     def __init__(self, hsz):
@@ -50,7 +35,8 @@ class Attention(nn.Module):
         _betas = torch.sum(torch.exp(self.beta(_hiddens)), dim=1)
         beta = torch.exp(self.beta(sigma)) / _betas
 
-        return (beta*hidden).unsqueeze(1)
+        return (beta * hidden).unsqueeze(1)
+
 
 class Actor(nn.Module):
     def __init__(self, vocab_size, dec_hsz, rnn_layers, bsz, max_len, dropout, use_cuda):
@@ -62,11 +48,12 @@ class Actor(nn.Module):
         self.bsz = bsz
         self.max_len = max_len
         self.vocab_size = vocab_size
+        self.dropout = dropout
 
         self.enc = inception_v3(True)
         self.enc_out = nn.Linear(1000, dec_hsz)
         self.lookup_table = nn.Embedding(vocab_size, dec_hsz, padding_idx=PAD)
-        self.rnn = nn.LSTM(dec_hsz+dec_hsz, dec_hsz, rnn_layers,
+        self.rnn = nn.LSTM(dec_hsz + dec_hsz, dec_hsz, rnn_layers,
                            batch_first=True,
                            dropout=dropout)
         self.attn = Attention(dec_hsz)
@@ -85,54 +72,44 @@ class Actor(nn.Module):
     def feed_enc(self, enc):
         weight = next(self.parameters()).data
         c = Variable(weight.new(
-                self.rnn_layers, self.bsz, self.dec_hsz).zero_())
+            self.rnn_layers, self.bsz, self.dec_hsz).zero_())
 
         h = Variable(enc.data.
-                unsqueeze(0).expand(self.rnn_layers, *enc.size()))
+                     unsqueeze(0).expand(self.rnn_layers, *enc.size()))
 
         return (h.contiguous(), c.contiguous())
 
-    def forward(self, hidden, labels):
-        word = Variable(self.torch.LongTensor([[BOS]]*self.bsz))
+    def forward(self, hidden, labels=None):
+        word = Variable(self.torch.LongTensor([[BOS]] * self.bsz))
         emb_enc = self.lookup_table(word)
         hiddens = [hidden[0].squeeze()]
         attn = torch.transpose(hidden[0], 0, 1)
-        outputs, words = [], [word]
+        outputs, words = [], []
 
         for i in range(self.max_len):
             _, hidden = self.rnn(torch.cat([emb_enc, attn], -1), hidden)
-            props = self.out(hidden[0][-1])
-            attn = self.attn(hiddens, hidden[0][-1])
+            h_state = F.dropout(hidden[0], p=self.dropout)
 
-            emb_enc = self.lookup_table(labels[:, i])
-            emb_enc = emb_enc.unsqueeze(1)
-            _, word = torch.max(props, -1, keepdim=True)
+            props = F.log_softmax(self.out(h_state[-1]), dim=-1)
+            attn = self.attn(hiddens, h_state[-1])
+
+            if labels is not None:
+                emb_enc = self.lookup_table(labels[:, i]).unsqueeze(1)
+
+            else:
+                _props = props.data.clone().exp()
+                word = Variable(_props.multinomial(1), requires_grad=False)
+                words.append(word)
+
+                emb_enc = self.lookup_table(word)
 
             outputs.append(props.unsqueeze(1))
-            words.append(word)
 
-        return F.log_softmax(torch.cat(outputs, 1), dim=-1), torch.cat(words, 1)
+        if labels is not None:
+            return torch.cat(outputs, 1)
 
-    def speak(self, hidden):
-        word = Variable(self.torch.LongTensor([[BOS]]*self.bsz))
-        emb_enc = self.lookup_table(word)
-        hiddens = [hidden[0].squeeze()]
-        attn = torch.transpose(hidden[0], 0, 1)
-        words, sample_props = [], []
-
-        for _ in range(self.max_len):
-            _, hidden = self.rnn(torch.cat([emb_enc, attn], -1), hidden)
-            props = F.log_softmax(self.out(hidden[0][-1]), dim=-1)
-            attn = self.attn(hiddens, hidden[0][-1])
-
-            _props = props.data.clone().exp()
-            word = Variable(_props.multinomial(1), requires_grad=False)
-            emb_enc = self.lookup_table(word)
-
-            words.append(word)
-            sample_props.append(props.gather(1, word))
-
-        return torch.cat(words, 1), torch.cat(sample_props, 1)
+        else:
+            return torch.cat(outputs, 1), torch.cat(words, 1)
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)
@@ -147,6 +124,7 @@ class Actor(nn.Module):
     def get_trainable_parameters(self):
         return filter(lambda m: m.requires_grad, self.parameters())
 
+
 class Critic(nn.Module):
     def __init__(self, vocab_size, dec_hsz, rnn_layers, bsz, max_len, dropout, use_cuda):
         super().__init__()
@@ -157,62 +135,37 @@ class Critic(nn.Module):
         self.bsz = bsz
         self.max_len = max_len
         self.vocab_size = vocab_size
+        self.dropout = dropout
 
         self.lookup_table = nn.Embedding(vocab_size, dec_hsz, padding_idx=PAD)
         self.rnn = nn.LSTM(self.dec_hsz,
-                    self.dec_hsz,
-                    self.rnn_layers,
-                    batch_first=True,
-                    dropout=dropout)
-        self.out = nn.Linear(self.dec_hsz, vocab_size)
-
-        self.criterion = torch.nn.MSELoss()
+                           self.dec_hsz,
+                           self.rnn_layers,
+                           batch_first=True,
+                           dropout=dropout)
+        self.value = nn.Linear(self.dec_hsz, 1)
 
         self._reset_parameters()
 
     def feed_enc(self, enc):
         weight = next(self.parameters()).data
         c = Variable(weight.new(
-                self.rnn_layers, self.bsz, self.dec_hsz).zero_())
+            self.rnn_layers, self.bsz, self.dec_hsz).zero_())
 
         h = Variable(enc.data.
-                unsqueeze(0).expand(self.rnn_layers, *enc.size()))
+                     unsqueeze(0).expand(self.rnn_layers, *enc.size()))
         return (h.contiguous(), c.contiguous())
 
     def forward(self, inputs, hidden):
-        emb_enc = self.lookup_table(inputs[:, :-1])
-        rnn_out, _ = self.rnn(emb_enc, hidden)
-        rnn_out = rnn_out.contiguous()
-        props = F.softmax(self.out(rnn_out), dim=-1)
-        max_props, words = torch.max(props, -1)
 
-        return max_props, words
+        emb_enc = self.lookup_table(inputs.clone()[:, :-1])
+        _, out = self.rnn(emb_enc, hidden)
+        out = F.dropout(out[0][-1], p=self.dropout)
 
-    def _fix_variable(self, varias):
-        _fixed = Variable(varias.data.new(*varias.size()), requires_grad=False)
-        _fixed.data.copy_(varias.data)
-
-        return _fixed
-
-    def td_error(self, reward, props, optim):
-        loss = .0
-
-        for step in range(self.max_len-1):
-            optim.zero_grad()
-
-            _fixed = self._fix_variable(props[:, step+1])
-            _loss = self.criterion(props[:, step], _fixed.add(reward))
-            _loss.backward(retain_graph=True)
-
-            optim.clip_grad_norm()
-            optim.step()
-
-            loss += _loss.data
-
-        return loss
+        return F.sigmoid(self.value(out)).squeeze()
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)
 
         self.lookup_table.weight.data.uniform_(-stdv, stdv)
-        self.out.weight.data.uniform_(-stdv, stdv)
+        self.value.weight.data.uniform_(-stdv, stdv)
