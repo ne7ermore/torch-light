@@ -1,4 +1,4 @@
-** Self Critic for Translate
+## Self Critic for Translate
 
 ## Requirement
 * python 3.5
