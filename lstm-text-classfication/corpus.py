@@ -6,8 +6,10 @@ import os
 
 from const import *
 
+
 def word2idx(sents, word2idx):
     return [[word2idx[w] if w in word2idx else UNK for w in s] for s in sents]
+
 
 class Dictionary(object):
     def __init__(self, word2idx={}, idx_num=0):
@@ -28,6 +30,7 @@ class Dictionary(object):
     def __str__(self):
         return "%s(size = %d)".format(self.__class__.__name__, len(self.idx))
 
+
 class Words(Dictionary):
     def __init__(self):
         word2idx = {
@@ -41,6 +44,7 @@ class Words(Dictionary):
         for word in words:
             self._add(word)
 
+
 class Labels(Dictionary):
     def __init__(self):
         super().__init__()
@@ -49,6 +53,7 @@ class Labels(Dictionary):
         _labels = set(labels)
         for label in _labels:
             self._add(label)
+
 
 class Corpus(object):
     def __init__(self, path, save_data, max_len=16):
@@ -112,6 +117,7 @@ class Corpus(object):
         print('Finish dumping the data to file - [{}]'.format(self._save_data))
         print('words length - [{}]'.format(len(self.w)))
         print('label size - [{}]'.format(len(self.l)))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='CNN Classification')

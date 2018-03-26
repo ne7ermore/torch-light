@@ -29,6 +29,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [BiMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
 * [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
 * [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
+* [reinforced-translate](https://github.com/ne7ermore/torch_light/tree/master/reinforced-translate)
 
 #### 3. Vision
 * [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)

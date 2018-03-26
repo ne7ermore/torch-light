@@ -61,24 +61,6 @@ class Actor(nn.Module):
 
         self._reset_parameters()
 
-    def encode(self, imgs):
-        if self.training:
-            enc = self.enc(imgs)[0]
-        else:
-            enc = self.enc(imgs)
-        enc = self.enc_out(enc)
-        return enc
-
-    def feed_enc(self, enc):
-        weight = next(self.parameters()).data
-        c = Variable(weight.new(
-            self.rnn_layers, self.bsz, self.dec_hsz).zero_())
-
-        h = Variable(enc.data.
-                     unsqueeze(0).expand(self.rnn_layers, *enc.size()))
-
-        return (h.contiguous(), c.contiguous())
-
     def forward(self, hidden, labels=None):
         word = Variable(self.torch.LongTensor([[BOS]] * self.bsz))
         emb_enc = self.lookup_table(word)
@@ -110,6 +92,24 @@ class Actor(nn.Module):
 
         else:
             return torch.cat(outputs, 1), torch.cat(words, 1)
+
+    def encode(self, imgs):
+        if self.training:
+            enc = self.enc(imgs)[0]
+        else:
+            enc = self.enc(imgs)
+        enc = self.enc_out(enc)
+        return enc
+
+    def feed_enc(self, enc):
+        weight = next(self.parameters()).data
+        c = Variable(weight.new(
+            self.rnn_layers, self.bsz, self.dec_hsz).zero_())
+
+        h = Variable(enc.data.
+                     unsqueeze(0).expand(self.rnn_layers, *enc.size()))
+
+        return (h.contiguous(), c.contiguous())
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)
@@ -157,7 +157,6 @@ class Critic(nn.Module):
         return (h.contiguous(), c.contiguous())
 
     def forward(self, inputs, hidden):
-
         emb_enc = self.lookup_table(inputs.clone()[:, :-1])
         _, out = self.rnn(emb_enc, hidden)
         out = F.dropout(out[0][-1], p=self.dropout)
