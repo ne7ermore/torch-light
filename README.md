@@ -19,8 +19,12 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [CNN Text classfication](https://github.com/ne7ermore/torch_light/tree/master/cnn-text-classfication)
 * [LSTM Text classfication](https://github.com/ne7ermore/torch_light/tree/master/lstm-text-classfication)
 
-#### 2. NLP
+#### 2. Reinforcement Training
 * [Image-Cap](https://github.com/ne7ermore/torch_light/tree/master/Image-Cap)
+* [Reinforced Translate](https://github.com/ne7ermore/torch_light/tree/master/reinforced-translate)
+* [DQN](https://github.com/ne7ermore/torch_light/tree/master/DQN)
+
+#### 3. NLP
 * [Poetry VAE-NLG](https://github.com/ne7ermore/torch_light/tree/master/vae-nlg)
 * [Seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
 * [BiLSTM CRF NER](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
@@ -29,14 +33,13 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [BiMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
 * [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
 * [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
-* [Reinforced Translate](https://github.com/ne7ermore/torch_light/tree/master/reinforced-translate)
 
-#### 3. Vision
+#### 4. Vision
 * [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)
 * [Neural Style](https://github.com/ne7ermore/torch_light/tree/master/neural-artistic-style)
 * [DC Gan](https://github.com/ne7ermore/torch_light/tree/master/dc-gan)
 
-#### 4. Special Things
+#### 5. Special Things
 * [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
 
 ## Getting Started
