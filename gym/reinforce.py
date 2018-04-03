@@ -24,15 +24,13 @@ env.seed(args.seed)
 torch.manual_seed(args.seed)
 
 
-class Policy(nn.Module):
+class ActorCritic(nn.Module):
     def __init__(self):
-        super(Policy, self).__init__()
+        super().__init__()
+
         self.affine1 = nn.Linear(4, 128)
         self.action_head = nn.Linear(128, 2)
         self.value_head = nn.Linear(128, 1)
-
-        self.saved_actions = []
-        self.rewards = []
 
     def forward(self, x):
         x = F.relu(self.affine1(x))
@@ -52,7 +50,7 @@ class Policy(nn.Module):
         return action.data[0]
 
 
-model = Policy()
+model = ActorCritic()
 optimizer = optim.Adam(model.parameters(), lr=3e-2)
 
 
@@ -68,8 +66,7 @@ def main():
             if done:
                 break
 
-        R = 0
-        rewards = []
+        R, rewards = 0, []
         for r in policy_rewards[::-1]:
             R = r + args.gamma * R
             rewards.insert(0, R)
@@ -85,9 +82,7 @@ def main():
             reward = r - value.data[0]
             policy_loss.append(-prop * reward)
 
-        value_loss = torch.cat(value_loss).sum()
-        policy_loss = torch.cat(policy_loss).sum()
-        loss = value_loss + policy_loss
+        loss = torch.cat(value_loss).sum() + torch.cat(policy_loss).sum()
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
