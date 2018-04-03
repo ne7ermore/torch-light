@@ -22,7 +22,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 #### 2. Reinforcement Training
 * [Image-Cap](https://github.com/ne7ermore/torch_light/tree/master/Image-Cap)
 * [Reinforced Translate](https://github.com/ne7ermore/torch_light/tree/master/reinforced-translate)
-* [DQN](https://github.com/ne7ermore/torch_light/tree/master/DQN)
+* [Toy](https://github.com/ne7ermore/torch_light/tree/master/gym)
 
 #### 3. NLP
 * [Poetry VAE-NLG](https://github.com/ne7ermore/torch_light/tree/master/vae-nlg)
