@@ -15,6 +15,7 @@ from torch.distributions import Categorical
 parser = argparse.ArgumentParser(description='PyTorch actor-critic example')
 parser.add_argument('--gamma', type=float, default=0.99)
 parser.add_argument('--seed', type=int, default=543, metavar='N')
+parser.add_argument('--render', action='store_true')
 
 args = parser.parse_args()
 
@@ -57,6 +58,8 @@ optimizer = optim.Adam(model.parameters(), lr=3e-2)
 def main():
     for i_episode in count(1):
         state = env.reset()
+        if args.render:
+            env.render()
         values, select_props, policy_rewards = [], [], []
         for t in range(10000):
             action = model.select_action(state, values, select_props)
