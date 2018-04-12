@@ -1,6 +1,9 @@
 ## Seq2seq for French to English translation
 Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706.03762)" (Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin, arxiv, 2017).
 
+#### Thanks to @jadore801120 for his [implementation](https://github.com/jadore801120/attention-is-all-you-need-pytorch)
+---
+
 ##### Instead of CNN of RNN, reasons for using attention:
 * Total computational complexity per layer
 * The amount of computation can be parallelized
@@ -10,6 +13,7 @@ Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706
 <p align="center">
 <img src="http://imgur.com/1krF2R6.png" width="250">
 </p>
+
 
 ## Requirement
 * python 3.5

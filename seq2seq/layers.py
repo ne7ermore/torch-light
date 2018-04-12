@@ -1,4 +1,6 @@
 # borrowed from https://github.com/jadore801120/attention-is-all-you-need-pytorch
+##################################################################################
+
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -6,6 +8,7 @@ from torch.nn import init
 import torch.nn.functional as F
 
 import numpy as np
+
 
 class LayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
@@ -19,6 +22,7 @@ class LayerNorm(nn.Module):
         sigma = torch.std(input, dim=-1, keepdim=True).clamp(min=self.eps)
         output = (input - mu) / sigma
         return output * self.weight.expand_as(output) + self.bias.expand_as(output)
+
 
 class ScaledDotProductAttention(nn.Module):
     def __init__(self, d_k, dropout):
@@ -35,6 +39,7 @@ class ScaledDotProductAttention(nn.Module):
         attn = self.dropout(attn)
         return torch.bmm(attn, v)
 
+
 class MultiHeadAtt(nn.Module):
     def __init__(self, n_head, d_model, dropout):
         super().__init__()
@@ -43,7 +48,7 @@ class MultiHeadAtt(nn.Module):
 
         for name in ["w_qs", "w_ks", "w_vs"]:
             self.__setattr__(name,
-                nn.Parameter(torch.FloatTensor(n_head, d_model, d_k)))
+                             nn.Parameter(torch.FloatTensor(n_head, d_model, d_k)))
 
         self.attention = ScaledDotProductAttention(d_k, dropout)
         self.lm = LayerNorm(d_model)
@@ -70,8 +75,10 @@ class MultiHeadAtt(nn.Module):
         v_s = torch.bmm(v_s, self.w_vs).view(-1, len_v, d_v)
 
         outputs = self.attention(q_s, k_s, v_s, attn_mask.repeat(n_head, 1, 1))
-        outputs = torch.cat(torch.split(outputs, bsz, dim=0), dim=-1).view(-1, n_head*d_v)
-        outputs = F.dropout(self.w_o(outputs), p=self.dropout).view(bsz, len_q, -1)
+        outputs = torch.cat(torch.split(outputs, bsz, dim=0),
+                            dim=-1).view(-1, n_head * d_v)
+        outputs = F.dropout(self.w_o(outputs),
+                            p=self.dropout).view(bsz, len_q, -1)
         return self.lm(outputs + residual)
 
     def _init_weight(self):
@@ -80,22 +87,24 @@ class MultiHeadAtt(nn.Module):
         init.xavier_normal(self.w_vs)
         init.xavier_normal(self.w_o.weight)
 
+
 class PositionWise(nn.Module):
     def __init__(self, d_model, d_ff, dropout):
         super().__init__()
 
         self.seq = nn.Sequential(
-                nn.Conv1d(d_model, d_ff, 1),
-                nn.ReLU(),
-                nn.Conv1d(d_ff, d_model, 1),
-                nn.Dropout(dropout)
-            )
+            nn.Conv1d(d_model, d_ff, 1),
+            nn.ReLU(),
+            nn.Conv1d(d_ff, d_model, 1),
+            nn.Dropout(dropout)
+        )
         self.lm = LayerNorm(d_model)
 
     def forward(self, input):
         residual = input
         out = self.seq(input.transpose(1, 2)).transpose(1, 2)
         return self.lm(residual + out)
+
 
 class EncoderLayer(nn.Module):
     def __init__(self, d_model, d_ff, n_head, dropout):
@@ -109,6 +118,7 @@ class EncoderLayer(nn.Module):
         enc_output = self.pw(enc_output)
         return enc_output
 
+
 class DecoderLayer(nn.Module):
     def __init__(self, d_model, d_ff, n_head, dropout=0.1):
         super().__init__()
@@ -117,8 +127,10 @@ class DecoderLayer(nn.Module):
         self.pw = PositionWise(d_model, d_ff, dropout)
 
     def forward(self, dec_input, enc_output, slf_attn_mask, dec_enc_attn_mask):
-        dec_output = self.slf_mh(dec_input, dec_input, dec_input, slf_attn_mask)
-        dec_output = self.dec_mh(dec_output, enc_output, enc_output, dec_enc_attn_mask)
+        dec_output = self.slf_mh(dec_input, dec_input,
+                                 dec_input, slf_attn_mask)
+        dec_output = self.dec_mh(
+            dec_output, enc_output, enc_output, dec_enc_attn_mask)
         dec_output = self.pw(dec_output)
 
         return dec_output

@@ -6,6 +6,7 @@ import torch.nn.functional as F
 
 import const
 
+
 class LayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
         super().__init__()
@@ -19,6 +20,7 @@ class LayerNorm(nn.Module):
         output = (input - mu) / sigma
         return output * self.weight.expand_as(output) + self.bias.expand_as(output)
 
+
 class LSTM_Text(nn.Module):
     def __init__(self, args):
         super().__init__()
@@ -28,15 +30,15 @@ class LSTM_Text(nn.Module):
         self.num_directions = 2 if self.bidirectional else 1
 
         self.lookup_table = nn.Embedding(self.vocab_size, self.embed_dim,
-                                padding_idx=const.PAD)
+                                         padding_idx=const.PAD)
         self.lstm = nn.LSTM(self.embed_dim,
                             self.hidden_size,
                             self.lstm_layers,
                             dropout=self.dropout,
                             bidirectional=self.bidirectional)
-        self.ln = LayerNorm(self.hidden_size*self.num_directions)
-        self.logistic = nn.Linear(self.hidden_size*self.num_directions,
-                                self.label_size)
+        self.ln = LayerNorm(self.hidden_size * self.num_directions)
+        self.logistic = nn.Linear(self.hidden_size * self.num_directions,
+                                  self.label_size)
 
         self._init_weights()
 
@@ -46,10 +48,10 @@ class LSTM_Text(nn.Module):
         self.logistic.bias.data.fill_(0)
 
     def init_hidden(self):
-        num_layers = self.lstm_layers*self.num_directions
+        num_layers = self.lstm_layers * self.num_directions
 
         weight = next(self.parameters()).data
-        return (Variable(weight.new(num_layers, self.batch_size, self.hidden_size).zero_()),Variable(weight.new(num_layers, self.batch_size, self.hidden_size).zero_()))
+        return (Variable(weight.new(num_layers, self.batch_size, self.hidden_size).zero_()), Variable(weight.new(num_layers, self.batch_size, self.hidden_size).zero_()))
 
     def forward(self, input, hidden):
         encode = self.lookup_table(input)
