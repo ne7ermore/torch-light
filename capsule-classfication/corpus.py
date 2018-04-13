@@ -124,7 +124,7 @@ if __name__ == "__main__":
                         help='file path')
     parser.add_argument('--save-data', type=str, default="./data/corpus.pt",
                         help='path to save processed data')
-    parser.add_argument('--max-lenth', type=int, default=28,
+    parser.add_argument('--max-lenth', type=int, default=16,
                         help='max length left of sentence [default: 28]')
     args = parser.parse_args()
     corpus = Corpus(args.file_path, args.save_data, args.max_lenth)

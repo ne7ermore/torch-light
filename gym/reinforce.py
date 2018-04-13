@@ -1,8 +1,8 @@
 import argparse
+from itertools import count
+
 import gym
 import numpy as np
-from itertools import count
-from collections import namedtuple
 
 import torch
 import torch.nn as nn

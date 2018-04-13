@@ -61,8 +61,8 @@ class ConvUnit(nn.Module):
 
         self.conv = nn.Conv2d(in_channels=256,
                               out_channels=32,
-                              kernel_size=9,
-                              stride=2)
+                              kernel_size=5,
+                              stride=1)
 
     def forward(self, x):
         return self.conv(x)
@@ -121,7 +121,7 @@ class DigitCap(nn.Module):
         if self.use_cuda:
             b_ij = b_ij.cuda()
 
-        for step in range(self.iterations):
+        for _ in range(self.iterations):
             c_ij = F.softmax(b_ij, dim=-1)
             c_ij = torch.cat([c_ij] * bsz, dim=0).unsqueeze(4)
             s_j = (c_ij * u_hat).sum(dim=1, keepdim=True)
@@ -146,9 +146,9 @@ class Capsule(nn.Module):
                          self.dropout,
                          self.hsz,
                          self.layers)
-        self.fc = nn.Linear(self.hsz * 2, 28)
+        self.fc = nn.Linear(self.hsz * 2, self.max_len)
         self.conv1 = nn.Sequential(
-            nn.Conv2d(1, 256, kernel_size=9),
+            nn.Conv2d(1, 256, kernel_size=7),
             nn.ReLU(inplace=True)
         )
         self.pCap = PrimaryCap(self.num_primary_units)
