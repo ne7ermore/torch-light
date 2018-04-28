@@ -8,6 +8,7 @@ import numpy as np
 from highway import Highway
 from const import BOS
 
+
 class Encoder(nn.Module):
     def __init__(self, embed_dim, hidden_size, num_layers, dropout):
         super().__init__()
@@ -17,21 +18,22 @@ class Encoder(nn.Module):
         self.dropout = dropout
 
         self.rnn = nn.LSTM(embed_dim, hidden_size,
-                num_layers, dropout, bidirectional=True)
+                           num_layers, dropout, bidirectional=True)
 
     def forward(self, input, hidden):
         _, hidden = self.rnn(input.transpose(0, 1), hidden)
         out = F.dropout(torch.cat((hidden[0][-2],
-                    hidden[0][-1]), -1), p=self.dropout)
+                                   hidden[0][-1]), -1), p=self.dropout)
 
         return out, hidden
 
     def init_hidden(self, bsz):
-        size = (self.num_layers*2, bsz, self.hidden_size)
+        size = (self.num_layers * 2, bsz, self.hidden_size)
 
         weight = next(self.parameters()).data
         return (Variable(weight.new(*size).zero_()),
                 Variable(weight.new(*size).zero_()))
+
 
 class Decoder(nn.Module):
     def __init__(self, embed_dim, latent_dim, hidden_size, num_layers, dropout, vocab_size):
@@ -42,8 +44,8 @@ class Decoder(nn.Module):
         self.num_layers = num_layers
         self.latent_dim = latent_dim
 
-        self.rnn = nn.LSTM(embed_dim+latent_dim, hidden_size,
-                num_layers, dropout=dropout, batch_first=True)
+        self.rnn = nn.LSTM(embed_dim + latent_dim, hidden_size,
+                           num_layers, dropout=dropout, batch_first=True)
         self.lr = nn.Linear(hidden_size, vocab_size)
 
         self._init_weight()
@@ -57,7 +59,7 @@ class Decoder(nn.Module):
         rnn_out = F.dropout(rnn_out, p=self.dropout)
         out = self.lr(rnn_out.contiguous().view(-1, self.hidden_size))
 
-        return F.log_softmax(out), hidden
+        return F.log_softmax(out, dim=-1), hidden
 
     def init_hidden(self, bsz):
         size = (self.num_layers, bsz, self.hidden_size)
@@ -83,13 +85,13 @@ class VAE(nn.Module):
 
         self.hw = Highway(self.hw_layers, self.hw_hsz, F.relu)
         self.encode = Encoder(self.embed_dim,
-                    self.enc_hsz, self.enc_layers, self.dropout)
+                              self.enc_hsz, self.enc_layers, self.dropout)
 
-        self._enc_mu = nn.Linear(self.enc_hsz*2, self.latent_dim)
-        self._enc_log_sigma = nn.Linear(self.enc_hsz*2, self.latent_dim)
+        self._enc_mu = nn.Linear(self.enc_hsz * 2, self.latent_dim)
+        self._enc_log_sigma = nn.Linear(self.enc_hsz * 2, self.latent_dim)
 
         self.decode = Decoder(self.embed_dim, self.latent_dim,
-                self.dec_hsz, self.dec_layers, self.dropout, self.vocab_size)
+                              self.dec_hsz, self.dec_layers, self.dropout, self.vocab_size)
 
         self._init_weight()
 
@@ -109,7 +111,8 @@ class VAE(nn.Module):
         def latent_loss(mu, sigma):
             pow_mu = mu * mu
             pow_sigma = sigma * sigma
-            return 0.5 * torch.mean(pow_mu + pow_sigma - torch.log(pow_sigma) - 1)
+            # return 0.5 * torch.mean(pow_mu + pow_sigma - torch.log(pow_sigma) - 1)
+            return 0.5 * torch.sum(pow_mu + pow_sigma - torch.log(pow_sigma) - 1, dim=-1).mean()
 
         mu = self._enc_mu(enc_output)
         sigma = torch.exp(.5 * self._enc_log_sigma(enc_output))
@@ -118,7 +121,7 @@ class VAE(nn.Module):
         weight = next(self.parameters()).data
         std_z = Variable(weight.new(*sigma.size()), requires_grad=False)
         std_z.data.copy_(torch.from_numpy(
-                np.random.normal(size=sigma.size())))
+            np.random.normal(size=sigma.size())))
 
         return mu + sigma * std_z
 
@@ -132,7 +135,7 @@ class VAE(nn.Module):
         weight = next(self.parameters()).data
         z = Variable(weight.new(*size), volatile=True)
         z.data.copy_(torch.from_numpy(
-                np.random.normal(size=size)))
+            np.random.normal(size=size)))
 
         prob = torch.LongTensor([BOS])
         input = Variable(prob.unsqueeze(1), volatile=True)
@@ -141,13 +144,13 @@ class VAE(nn.Module):
         portry = ""
         hidden = self.decode.init_hidden(1)
 
-        for index in range(1, max_len+1):
+        for index in range(1, max_len + 1):
             encode = self.lookup_table(input)
             output, hidden = self.decode(encode, z, hidden)
             prob = output.squeeze().data
             next_word = torch.max(prob, -1)[1].tolist()[0]
             input.data.fill_(next_word)
-            if index%5 == 0:
+            if index % 5 == 0:
                 portry += self.idx2word[next_word]
                 portry += "，"
             else:

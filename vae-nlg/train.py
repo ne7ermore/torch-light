@@ -37,6 +37,7 @@ import torch
 
 torch.manual_seed(args.seed)
 use_cuda = torch.cuda.is_available() and not args.unuse_cuda
+
 if use_cuda:
     torch.cuda.manual_seed(args.seed)
 
@@ -52,7 +53,7 @@ args.pre_w2v = data['pre_w2v']
 args.idx2word = {v: k for k, v in data['dict']['src'].items()}
 
 training_data = DataLoader(data['train'],
-        args.max_len, args.batch_size, cuda=use_cuda)
+                           args.max_len, args.batch_size, cuda=use_cuda)
 
 args.n_warmup_steps = args.n_warmup_steps if args.n_warmup_steps != 0 else training_data._stop_step
 
@@ -69,8 +70,8 @@ if use_cuda:
 criterion = torch.nn.CrossEntropyLoss()
 
 optimizer = ScheduledOptim(
-               torch.optim.Adam(vae.parameters(), betas=(0.9, 0.98), eps=1e-09),
-               args.embed_dim, args.n_warmup_steps, vae.parameters(), args.clip)
+    torch.optim.Adam(vae.parameters(), betas=(0.9, 0.98), eps=1e-09),
+    args.embed_dim, args.n_warmup_steps, vae.parameters(), args.clip)
 
 # ##############################################################################
 # Training
@@ -80,11 +81,13 @@ from tqdm import tqdm
 
 train_loss = []
 
+
 def repackage_hidden(h):
     if type(h) == Variable:
         return Variable(h.data)
     else:
         return tuple(repackage_hidden(v) for v in h)
+
 
 def train():
     vae.train()
@@ -92,12 +95,13 @@ def train():
     enc_hidden = vae.encode.init_hidden(args.batch_size)
     dec_hidden = vae.decode.init_hidden(args.batch_size)
     for enc_input, dec_input, label in tqdm(training_data, mininterval=1,
-                desc='Generator Train Processing', leave=False):
+                                            desc='Generator Train Processing', leave=False):
         optimizer.zero_grad()
         enc_hidden = repackage_hidden(enc_hidden)
         dec_hidden = repackage_hidden(dec_hidden)
 
-        target, latent_loss, enc_hidden, dec_hidden = vae(enc_input, dec_input, enc_hidden, dec_hidden)
+        target, latent_loss, enc_hidden, dec_hidden = vae(
+            enc_input, dec_input, enc_hidden, dec_hidden)
         loss = criterion(target, label.contiguous().view(-1)) + latent_loss
 
         loss.backward()
@@ -106,7 +110,8 @@ def train():
 
         total_loss += loss.data
 
-    return total_loss[0]/training_data.sents_size
+    return total_loss[0] / training_data.sents_size
+
 
 # ##############################################################################
 # Save Model
@@ -116,11 +121,12 @@ total_start_time = time.time()
 
 try:
     print('-' * 90)
-    for epoch in range(1, args.epochs+1):
+    for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
         loss = train()
 
-        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(epoch, time.time() - epoch_start_time, loss))
+        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(
+            epoch, time.time() - epoch_start_time, loss))
         print('-' * 90)
         vae.eval()
         for _ in range(10):
@@ -129,6 +135,6 @@ try:
             print('-' * 90)
 
 except KeyboardInterrupt:
-    print("-"*90)
-    print("Exiting from training early | cost time: {:5.2f}min".format((time.time() - total_start_time)/60.0))
-
+    print("-" * 90)
+    print("Exiting from training early | cost time: {:5.2f}min".format(
+        (time.time() - total_start_time) / 60.0))

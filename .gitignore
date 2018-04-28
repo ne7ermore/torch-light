@@ -7,3 +7,5 @@ sftp-config.json
 test.py
 example
 ignore*.py
+deep-painterly-harm/experiment.py
+deep-painterly-harm

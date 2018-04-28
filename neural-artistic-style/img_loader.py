@@ -56,7 +56,7 @@ class IMG_Processer(object):
 if __name__ == '__main__':
     if imshow is not None:
         ip = IMG_Processer()
-        _style, _content = ip.img2tensor('vangogh_starry_night.jpg', 'nm_logo.jpg')
+        _style, _content = ip.img2tensor('night.jpg', 'Tuebingen_Neckarfront.jpg')
 
         plt.ion()
 
