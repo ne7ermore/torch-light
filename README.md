@@ -49,11 +49,23 @@ $ git clone git@github.com:ne7ermore/torch_light.git
 $ cd torch_light/project
 $ python main.py
 ```
+## Citation
+If you find this code useful for your research, please cite:
+```
+@misc{TaoTorchLight,
+  author = {Ne7ermore Tao},
+  title = {torch_light},
+  publisher = {GitHub},
+  year = {2018},
+  howpublished = {\url{https://github.com/ne7ermore/torch_light}}
+}
+```
+
+## Contact
+Feel free to contact me if there is any questions (Tao liaoyuanhuo1987@gmail.com).
+Tao Ne7ermore/ [@ne7ermore](https://github.com/ne7ermore)
 
 ## Dependencies
 * [Python 3.5](https://www.python.org)
 * [PyTorch 0.2.0](http://pytorch.org/)
 * [Numpy 1.13.1](http://www.numpy.org/)
-
-## Author
-Ne7ermore Tao/ [@ne7ermore](https://github.com/ne7ermore)
