@@ -62,7 +62,7 @@ If you find this code useful for your research, please cite:
 ```
 
 ## Contact
-Feel free to contact me if there is any questions (Tao liaoyuanhuo1987@gmail.com).
+Feel free to contact me if there is any question (Tao liaoyuanhuo1987@gmail.com).
 Tao Ne7ermore/ [@ne7ermore](https://github.com/ne7ermore)
 
 ## Dependencies
