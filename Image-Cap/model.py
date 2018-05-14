@@ -161,7 +161,7 @@ class Critic(nn.Module):
         _, out = self.rnn(emb_enc, hidden)
         out = F.dropout(out[0][-1], p=self.dropout)
 
-        return F.sigmoid(self.value(out)).squeeze()
+        return self.value(out).squeeze()
 
     def _reset_parameters(self):
         stdv = 1. / math.sqrt(self.vocab_size)

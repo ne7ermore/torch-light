@@ -70,7 +70,6 @@ if __name__ == '__main__':
     import torch
     from torch.autograd import Variable
     import torch.nn.functional as F
-    from model import RewardCriterion
 
     data = Variable(torch.LongTensor([[3, 1, 2, 3, 1, 0], [2, 3, 4, 4, 0, 0]]))
     label = Variable(torch.LongTensor(
@@ -81,7 +80,7 @@ if __name__ == '__main__':
     bl = bl.cuda()
 
     reward = rouge_l(bl, label) - rouge_l(data, label)
-    print(reward[:, 0])
+    print(reward)
 
     props = torch.randn(16, 17, 256)
     words = torch.LongTensor([[i for i in range(16, -1, -1)]
@@ -89,14 +88,3 @@ if __name__ == '__main__':
     scores = torch.randn(16, 17)
 
     print(mask_score(props, words, scores))
-
-    crit = RewardCriterion()
-    crit = crit.cuda()
-
-    props = F.log_softmax(Variable(torch.randn(2, 6, 256),
-                                   requires_grad=True).cuda(), dim=-1)
-    max_props, _ = torch.max(props, -1)
-
-    loss, reward = crit(max_props, data, reward)
-    print(loss)
-    print(reward)
