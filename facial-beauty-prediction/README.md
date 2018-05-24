@@ -20,3 +20,5 @@
 <p align="center">Score: 3.783</p>
 <p align="center"><img src="data/imgs/1.png" /></p>
 
+<p align="center">Score: 2.298</p>
+<p align="center"><img src="data/imgs/mj.jpeg" /></p>

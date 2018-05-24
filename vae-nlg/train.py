@@ -33,7 +33,6 @@ parser.add_argument('--clip', type=float, default=0.25)
 
 args = parser.parse_args()
 
-import torch
 
 torch.manual_seed(args.seed)
 use_cuda = torch.cuda.is_available() and not args.unuse_cuda

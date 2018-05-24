@@ -37,5 +37,5 @@ class Predict:
 
 if __name__ == "__main__":
     p = Predict()
-    score = p.divine("data/imgs/1.png")
+    score = p.divine("data/imgs/mj.jpeg")
     print(score)
