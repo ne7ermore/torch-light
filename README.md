@@ -34,6 +34,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
 * [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
 * [Capsule Text classfication](https://github.com/ne7ermore/torch_light/tree/master/capsule-classfication)
+* [Retrieval Based Chatbots](https://github.com/ne7ermore/torch_light/tree/master/retrieval-based-chatbots)
 
 #### 4. Vision
 * [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)

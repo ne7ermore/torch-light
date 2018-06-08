@@ -1,10 +1,11 @@
 import torch
-import numpy as np
 
 from const import *
 
+
 def word2idx(sents, word2idx):
     return [[word2idx[w] if w in word2idx else UNK for w in s] for s in sents]
+
 
 class Dictionary(object):
     def __init__(self):
@@ -23,7 +24,8 @@ class Dictionary(object):
     def __call__(self, sents, min_count):
         words = [word for sent in sents for word in sent]
         word_count = {w: 0 for w in set(words)}
-        for w in words: word_count[w]+=1
+        for w in words:
+            word_count[w] += 1
 
         ignored_word_count = 0
         for word, count in word_count.items():
@@ -40,6 +42,7 @@ class Dictionary(object):
     def __str__(self):
         return "%s(size = %d)".format(self.__class__.__name__, len(self.idx))
 
+
 class Corpus(object):
     def __init__(self, save_data, w2v_file, max_len=20, min_word_count=1):
         self._save_data = save_data
@@ -49,7 +52,7 @@ class Corpus(object):
         self.valid_sents = None
         self.dict = Dictionary()
         self.w2v_file = w2v_file
-        self.is_ch = lambda w: (w >= '\u4e00' and w<='\u9fa5') or w == " "
+        self.is_ch = lambda w: (w >= '\u4e00' and w <= '\u9fa5') or w == " "
 
     def parse(self):
         sents, ignore_count = [], 0
@@ -62,7 +65,8 @@ class Corpus(object):
 
             sents.append(words)
 
-        print("Data`s length not eq {} - [{}]".format(self._max_len, ignore_count))
+        print(
+            "Data`s length not eq {} - [{}]".format(self._max_len, ignore_count))
         print("Data`s length eq {} - [{}]".format(self._max_len, len(sents)))
 
         word_ignore = self.dict(sents, self._min_word_count)
@@ -77,7 +81,8 @@ class Corpus(object):
         for line in open(self.w2v_file):
             temp = line.strip().split(" ")
 
-            if len(temp) < 10: continue
+            if len(temp) < 10:
+                continue
             w2c_dict[temp[0]] = list(map(float, temp[1:]))
 
             if "len_" not in locals():
@@ -107,6 +112,7 @@ class Corpus(object):
         self.parse()
         self.load_w2v()
         self.save()
+
 
 if __name__ == "__main__":
     import argparse
