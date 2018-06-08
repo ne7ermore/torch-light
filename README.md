@@ -39,6 +39,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)
 * [Neural Style](https://github.com/ne7ermore/torch_light/tree/master/neural-artistic-style)
 * [DC Gan](https://github.com/ne7ermore/torch_light/tree/master/dc-gan)
+* [Facial Beauty Prediction](https://github.com/ne7ermore/torch_light/tree/master/facial-beauty-prediction)
 
 #### 5. Special Things
 * [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
