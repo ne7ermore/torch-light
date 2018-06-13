@@ -147,7 +147,7 @@ try:
         print('-' * 90)
         acc = evaluate()
         print(
-            '| end of epoch {:3d} | accuracy {:.4f}%({}/{})'.format(epoch, acc))
+            '| end of epoch {:3d} | accuracy {:.4f}%'.format(epoch, acc))
         print('-' * 90)
 
 except KeyboardInterrupt:
