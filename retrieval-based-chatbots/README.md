@@ -28,6 +28,7 @@ python3 corpus.py
 python3 train.py
 ```
 
+
 ## Result
 
 <p align="center">
