@@ -102,7 +102,7 @@ class Corpus(object):
         else:
             self.test_origins = origins
             self.test_summurys = summurys
-            self.test_labels = df["score"].values
+            self.test_labels = df["score"].values - 1
             print(
                 'Test data - ignore original lines - [{}]'.format(ignore_ori_nums[0]))
             print(

@@ -99,15 +99,21 @@ cls_critic = torch.nn.CrossEntropyLoss()
 
 
 def evaluate():
+    if tf:
+        global tf_step
     model.eval()
-    corrects = eval_loss = 0
     _size = validation_data.sents_size
     for original, _, label in validation_data:
         _, cls_props = model(original)
-        corrects += (torch.max(cls_props, 1)
-                     [1].view(label.size()).data == label.data).sum()
+        c = (torch.max(cls_props, 1)
+             [1].view(label.size()).data == label.data).sum()
 
-    return corrects / _size * 100.0
+    if tf is not None:
+        add_summary_value("eval corrects", c)
+        tf_step += 1
+
+        if tf_step % 100 == 0:
+            tf_summary_writer.flush()
 
 
 def train():
@@ -144,11 +150,7 @@ try:
     for epoch in range(1, args.epochs + 1):
         train()
         optimizer.update_learning_rate()
-        print('-' * 90)
-        acc = evaluate()
-        print(
-            '| end of epoch {:3d} | accuracy {:.4f}%'.format(epoch, acc))
-        print('-' * 90)
+        evaluate()
 
 except KeyboardInterrupt:
     print("-" * 90)
