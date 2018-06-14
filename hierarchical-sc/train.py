@@ -9,7 +9,7 @@ parser.add_argument('--data', type=str, default='./data/corpus')
 parser.add_argument('--epochs', type=int, default=10)
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--label_size', type=int, default=5)
-parser.add_argument('--seed', type=int, default=612)
+parser.add_argument('--seed', type=int, default=614)
 parser.add_argument('--lr', type=float, default=.0003)
 
 parser.add_argument('--dropout', type=float, default=.5)
@@ -102,18 +102,13 @@ def evaluate():
     if tf:
         global tf_step
     model.eval()
-    _size = validation_data.sents_size
+    corrects = 0
     for original, _, label in validation_data:
         _, cls_props = model(original)
-        c = (torch.max(cls_props, 1)
-             [1].view(label.size()).data == label.data).sum()
+        corrects += (torch.max(cls_props, 1)
+                     [1].view(label.size()).data == label.data).sum()
 
-    if tf is not None:
-        add_summary_value("eval corrects", c)
-        tf_step += 1
-
-        if tf_step % 100 == 0:
-            tf_summary_writer.flush()
+    return corrects, validation_data.sents_size
 
 
 def train():
@@ -150,7 +145,11 @@ try:
     for epoch in range(1, args.epochs + 1):
         train()
         optimizer.update_learning_rate()
-        evaluate()
+        corrects, size = evaluate()
+        print('-' * 90)
+        print('| end of epoch {} | size {} | corrects {}'.format(
+            epoch, size, corrects))
+        print('-' * 90)
 
 except KeyboardInterrupt:
     print("-" * 90)
