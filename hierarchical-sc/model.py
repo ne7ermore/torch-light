@@ -15,6 +15,7 @@ def multi_view_att(ori_memory, att_w, dec_hidden, *args):
     ori_memory_t = ori_memory.transpose(1, 2)
 
     beta_is = torch.exp(torch.tanh(torch.matmul(dec_hidden, ori_memory_t)))
+
     beta_i_sum = torch.sum(beta_is, 0, keepdim=True)
     beta_is = torch.div(beta_is, beta_i_sum)
 
