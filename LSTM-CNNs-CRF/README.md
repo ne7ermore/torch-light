@@ -4,7 +4,7 @@ Perform experiments on the English data from [CoNLL 2003](https://www.clips.uant
 
 ## Requirement
 * python 3.5
-* pytorch 0.2.0
+* pytorch 0.4.0
 * numpy 1.13.1
 * tqdm
 

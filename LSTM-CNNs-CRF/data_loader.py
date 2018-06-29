@@ -3,9 +3,10 @@ import torch
 from torch.autograd import Variable
 import const
 
+
 class DataLoader(object):
     def __init__(self, sents, chars, label, word_max_len, char_max_len, cuda=True,
-                batch_size=64, shuffle=True, evaluation=False):
+                 batch_size=64, shuffle=True, evaluation=False):
         self.cuda = cuda
         self.sents_size = len(sents)
         self._step = 0
@@ -38,13 +39,21 @@ class DataLoader(object):
                 assert char_max_len is not None and word_max_len is not None
 
                 temp_char = [const.PAD] * char_max_len
-                temp_insts = np.array([inst + [temp_char] * (word_max_len - len(inst)) for inst in insts])
-                inst_data = np.array([[word + [const.PAD] * (char_max_len-len(word)) for word in inst] for inst in temp_insts])
+                temp_insts = np.array(
+                    [inst + [temp_char] * (word_max_len - len(inst)) for inst in insts])
+                inst_data = np.array(
+                    [[word + [const.PAD] * (char_max_len - len(word)) for word in inst] for inst in temp_insts])
             else:
                 max_len = max(len(inst) for inst in insts)
-                inst_data = np.array([inst + [const.PAD] * (max_len - len(inst)) for inst in insts])
+                inst_data = np.array(
+                    [inst + [const.PAD] * (max_len - len(inst)) for inst in insts])
 
-            inst_data_tensor = Variable(torch.from_numpy(inst_data), volatile=self.evaluation)
+            if self.evaluation:
+                with torch.no_grad():
+                    inst_data_tensor = Variable(torch.from_numpy(inst_data))
+            else:
+                inst_data_tensor = Variable(torch.from_numpy(inst_data))
+
             if self.cuda:
                 inst_data_tensor = inst_data_tensor.cuda()
 
@@ -54,13 +63,13 @@ class DataLoader(object):
             self._step = 0
             raise StopIteration()
 
-        _start = self._step*self._batch_size
+        _start = self._step * self._batch_size
         _bsz = self._batch_size
         self._step += 1
 
-        word = pad_to_longest(self._sents[_start:_start+_bsz])
-        char = pad_to_longest(self._chars[_start:_start+_bsz],
+        word = pad_to_longest(self._sents[_start:_start + _bsz])
+        char = pad_to_longest(self._chars[_start:_start + _bsz],
                               True, word.size(1), self._char_max_len)
-        label = pad_to_longest(self._label[_start:_start+_bsz])
+        label = pad_to_longest(self._label[_start:_start + _bsz])
 
         return word, char, label

@@ -6,17 +6,20 @@ from torch.nn import init
 
 from const import *
 
+
 def log_sum_exp(input, keepdim=False):
     assert input.dim() == 2
     max_scores, _ = input.max(dim=-1, keepdim=True)
     output = input - max_scores.expand_as(input)
     return max_scores + torch.log(torch.sum(torch.exp(output), dim=-1, keepdim=keepdim))
 
+
 def gather_index(input, index):
     assert input.dim() == 2 and index.dim() == 1
     index = index.unsqueeze(1).expand_as(input)
     output = torch.gather(input, 1, index)
     return output[:, 0]
+
 
 class CRF(nn.Module):
     def __init__(self, label_size, is_cuda):
@@ -28,14 +31,14 @@ class CRF(nn.Module):
         self.torch = torch.cuda if is_cuda else torch
 
     def _init_weight(self):
-        init.xavier_uniform(self.transitions)
+        init.xavier_uniform_(self.transitions)
         self.transitions.data[START, :].fill_(-10000.)
         self.transitions.data[:, STOP].fill_(-10000.)
 
     def _score_sentence(self, input, tags):
         bsz, sent_len, l_size = input.size()
         score = Variable(self.torch.FloatTensor(bsz).fill_(0.))
-        s_score = Variable(self.torch.LongTensor([[START]]*bsz))
+        s_score = Variable(self.torch.LongTensor([[START]] * bsz))
 
         tags = torch.cat([s_score, tags], dim=-1)
         input_t = input.transpose(0, 1)
@@ -43,17 +46,18 @@ class CRF(nn.Module):
         for i, words in enumerate(input_t):
             temp = self.transitions.index_select(1, tags[:, i])
             bsz_t = gather_index(temp.transpose(0, 1), tags[:, i + 1])
-            w_step_score = gather_index(words, tags[:, i+1])
+            w_step_score = gather_index(words, tags[:, i + 1])
             score = score + bsz_t + w_step_score
 
         temp = self.transitions.index_select(1, tags[:, -1])
         bsz_t = gather_index(temp.transpose(0, 1),
-                    Variable(self.torch.LongTensor([STOP]*bsz)))
-        return score+bsz_t
+                             Variable(self.torch.LongTensor([STOP] * bsz)))
+        return score + bsz_t
 
     def forward(self, input):
         bsz, sent_len, l_size = input.size()
-        init_alphas = self.torch.FloatTensor(bsz, self.label_size).fill_(-10000.)
+        init_alphas = self.torch.FloatTensor(
+            bsz, self.label_size).fill_(-10000.)
         init_alphas[:, START].fill_(0.)
         forward_var = Variable(init_alphas)
 
@@ -64,7 +68,8 @@ class CRF(nn.Module):
                 emit_score = words[:, next_tag].contiguous()
                 emit_score = emit_score.unsqueeze(1).expand_as(words)
 
-                trans_score = self.transitions[next_tag, :].view(1, -1).expand_as(words)
+                trans_score = self.transitions[next_tag, :].view(
+                    1, -1).expand_as(words)
                 next_tag_var = forward_var + trans_score + emit_score
                 alphas_t.append(log_sum_exp(next_tag_var, True))
             forward_var = torch.cat(alphas_t, dim=-1)
@@ -75,7 +80,8 @@ class CRF(nn.Module):
         backpointers = []
         bsz, sent_len, l_size = input.size()
 
-        init_vvars = self.torch.FloatTensor(bsz, self.label_size).fill_(-10000.)
+        init_vvars = self.torch.FloatTensor(
+            bsz, self.label_size).fill_(-10000.)
         init_vvars[:, START].fill_(0.)
         forward_var = Variable(init_vvars)
 
@@ -85,19 +91,22 @@ class CRF(nn.Module):
             viterbivars_t = []
 
             for next_tag in range(self.label_size):
-                _trans = self.transitions[next_tag].view(1, -1).expand_as(words)
+                _trans = self.transitions[next_tag].view(
+                    1, -1).expand_as(words)
                 next_tag_var = forward_var + _trans
-                best_tag_scores, best_tag_ids = torch.max(next_tag_var, 1, keepdim=True) # bsz
+                best_tag_scores, best_tag_ids = torch.max(
+                    next_tag_var, 1, keepdim=True)  # bsz
                 bptrs_t.append(best_tag_ids)
                 viterbivars_t.append(best_tag_scores)
 
             forward_var = torch.cat(viterbivars_t, -1) + words
             backpointers.append(torch.cat(bptrs_t, dim=-1))
 
-        terminal_var = forward_var + self.transitions[STOP].view(1, -1).expand(bsz, l_size)
+        terminal_var = forward_var + \
+            self.transitions[STOP].view(1, -1).expand(bsz, l_size)
         _, best_tag_ids = torch.max(terminal_var, 1)
 
-        best_path = [best_tag_ids]
+        best_path = [best_tag_ids.view(-1, 1)]
         for bptrs_t in reversed(backpointers):
             best_tag_ids = gather_index(bptrs_t, best_tag_ids)
             best_path.append(best_tag_ids.contiguous().view(-1, 1))
@@ -107,6 +116,7 @@ class CRF(nn.Module):
 
         return torch.cat(best_path, dim=-1)
 
+
 class BiLSTM(nn.Module):
     def __init__(self, word_size, word_ebd_dim, kernel_num, lstm_hsz, lstm_layers, dropout, batch_size):
         super().__init__()
@@ -115,7 +125,7 @@ class BiLSTM(nn.Module):
         self.batch_size = batch_size
 
         self.word_ebd = nn.Embedding(word_size, word_ebd_dim)
-        self.lstm = nn.LSTM(word_ebd_dim+kernel_num,
+        self.lstm = nn.LSTM(word_ebd_dim + kernel_num,
                             hidden_size=lstm_hsz // 2,
                             num_layers=lstm_layers,
                             batch_first=True,
@@ -134,12 +144,13 @@ class BiLSTM(nn.Module):
 
     def init_hidden(self):
         weight = next(self.parameters()).data
-        return (Variable(weight.new(self.lstm_layers*2, self.batch_size, self.lstm_hsz//2).zero_()),
-            Variable(weight.new(self.lstm_layers*2, self.batch_size, self.lstm_hsz//2).zero_()))
+        return (Variable(weight.new(self.lstm_layers * 2, self.batch_size, self.lstm_hsz // 2).zero_()),
+                Variable(weight.new(self.lstm_layers * 2, self.batch_size, self.lstm_hsz // 2).zero_()))
+
 
 class CNN(nn.Module):
     def __init__(self, char_size, char_ebd_dim,
-        kernel_num, filter_size, dropout):
+                 kernel_num, filter_size, dropout):
         super().__init__()
 
         self.char_size = char_size
@@ -155,7 +166,7 @@ class CNN(nn.Module):
         self._init_weight()
 
     def _init_weight(self, scope=1.):
-        init.xavier_uniform(self.char_ebd.weight)
+        init.xavier_uniform_(self.char_ebd.weight)
 
     def forward(self, input):
         bsz, word_len, char_len = input.size()
@@ -163,9 +174,10 @@ class CNN(nn.Module):
         encode = self.char_ebd(encode).unsqueeze(1)
         encode = F.relu(self.char_cnn(encode))
         encode = F.max_pool2d(encode,
-                    kernel_size=(encode.size(2), 1))
+                              kernel_size=(encode.size(2), 1))
         encode = F.dropout(encode.squeeze(), p=self.dropout)
         return encode.view(bsz, word_len, -1)
+
 
 class Model(nn.Module):
     def __init__(self, args):
@@ -175,9 +187,9 @@ class Model(nn.Module):
             self.__setattr__(k, v)
 
         self.cnn = CNN(self.char_size, self.char_ebd_dim,
-            self.kernel_num, self.filter_size, self.dropout)
+                       self.kernel_num, self.filter_size, self.dropout)
         self.bilstm = BiLSTM(self.word_size, self.word_ebd_dim, self.kernel_num,
-                    self.lstm_hsz, self.lstm_layers, self.dropout, self.batch_size)
+                             self.lstm_hsz, self.lstm_layers, self.dropout, self.batch_size)
 
         self.logistic = nn.Linear(self.lstm_hsz, self.label_size)
         self.crf = CRF(self.label_size, self.use_cuda)
@@ -189,7 +201,7 @@ class Model(nn.Module):
         output = self.logistic(output)
         pre_score = self.crf(output)
         label_score = self.crf._score_sentence(output, labels)
-        return (pre_score-label_score).mean(), None
+        return (pre_score - label_score).mean(), None
 
     def predict(self, word, char):
         char_out = self.cnn(char)
@@ -200,5 +212,3 @@ class Model(nn.Module):
     def _init_weights(self, scope=1.):
         self.logistic.weight.data.uniform_(-scope, scope)
         self.logistic.bias.data.fill_(0)
-
-
