@@ -50,7 +50,7 @@ class DataLoader(object):
                 stateMatrix = load_midi(os.path.join(style, f))
                 if len(stateMatrix) >= self.batch_len:
                     pieces[f] = stateMatrix
-                    print("loaded {}".format(f))
+                    # print("loaded {}".format(f))
 
         self.pieces = pieces
 
@@ -66,11 +66,11 @@ class DataLoader(object):
             seg_ins.append(seg_in)
             seg_outs.append(seg_out)
 
-        return self.l2V(seg_ins), self.l2V(seg_outs)
+        return self._l2V(seg_ins), self._l2V(seg_outs)
 
-    def l2V(self, ins):
+    def _l2V(self, ins):
         out = np.stack(ins, axis=0)
-        out = Variable(torch.from_numpy(out))
+        out = torch.from_numpy(out.astype(np.float32))
         if self.use_cuda:
             out = out.cuda()
         return out
@@ -81,6 +81,10 @@ if __name__ == "__main__":
     seg_ins, seg_outs = d.getPieceBatch()
     print(seg_ins.shape)
     print(seg_outs.shape)
+    seg_ins, seg_outs = seg_ins[0, 0], seg_outs[0, 0]
+    print(seg_ins.shape)
+    print(seg_outs)
+
     # (nd, bd, sd, nt), l = next(d)
     # print(l.shape)
     # print(nd.shape)

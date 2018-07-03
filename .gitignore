@@ -9,5 +9,4 @@ example
 ignore*.py
 deep-painterly-harm/experiment.py
 deep-painterly-harm
-sissi/python3-midi
-sissi/data
+sissi
