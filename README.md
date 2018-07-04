@@ -47,11 +47,34 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 * [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
 
 ## Getting Started
+
+### clone code
 ```
 $ git clone git@github.com:ne7ermore/torch_light.git
-$ cd torch_light/project
-$ python main.py
 ```
+### train
+
+```
+$ cd torch_light/project
+$ python3 main.py
+```
+
+or
+
+```
+$ cd torch_light/project
+$ python3 corpus.py
+$ python3 main.py
+```
+
+or
+
+```
+$ cd torch_light/project
+$ python3 corpus.py
+$ python3 train.py
+```
+
 ## Citation
 If you find this code useful for your research, please cite:
 ```
