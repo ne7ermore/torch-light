@@ -10,6 +10,9 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 
 ##### Continue updating...
 
+## Tutorial
+Get tutorial series in [Zhuanlan](https://zhuanlan.zhihu.com/c_135985394) if know Chinese
+
 ## Tabel of Pytorch Examples
 
 #### 1. Basics

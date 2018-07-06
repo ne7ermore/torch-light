@@ -4,6 +4,9 @@ Module implemention from "[Unsupervised Representation Learning with Deep Convol
 
 <p align="center"><img width="80%" src="images/struct.png" /></p>
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/32298900) if know Chinese
+
 ## Requirement
 * python 3.5
 * pytorch 0.2.0

@@ -1,6 +1,9 @@
 ## Facial Beauty Prediction
 [paper](https://arxiv.org/abs/1801.06345)
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/37308381) if know Chinese
+
 ## Dataset
 [repo](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release)
 

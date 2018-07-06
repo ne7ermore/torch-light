@@ -1,6 +1,9 @@
 ## A New Architecture for Multi-turn Response Selection in Retrieval-Based Chatbots
 Module implemention from [paper](https://arxiv.org/pdf/1612.01627.pdf)
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/37877669) if know Chinese
+
 ## Model
 <p align="center">
 <img src="img/1.png" width="800">

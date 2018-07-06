@@ -1,6 +1,9 @@
 ## A Hierarchical End-to-End Model for Jointly Improving Text Summarization and Sentiment Classification
 Module implemention from [paper](https://arxiv.org/pdf/1805.01089.pdf)
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/38615385) if know Chinese
+
 ## Datasets - Amazon SNAP Review Dataset (SNAP)
 We select three domains of product reviews to construct three benchmark datasets, which are Toys & Games, Sports & Outdoors, and Movie & TV.
 

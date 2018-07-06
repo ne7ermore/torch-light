@@ -3,6 +3,9 @@ Module implemention from DenseNet-BC architecture as described in the paper [Den
 
 <p align="center"><img width="100%" src="img/header.png" /></p>
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/31910637) if know Chinese
+
 ## Datasets
 Training and evaluation with CIFAR-100
 

@@ -1,6 +1,9 @@
 ## Introduction
 Natural Language Generation for Chinese Poetry
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/31173336) if know Chinese
+
 ## Requirement
 * python 3.5
 * pytorch 0.2.0

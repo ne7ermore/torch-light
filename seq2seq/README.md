@@ -1,6 +1,9 @@
 ## Seq2seq for French to English translation
 Module implemention from "[Attention is All You Need](https://arxiv.org/abs/1706.03762)" (Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin, arxiv, 2017).
 
+## Tutorial
+Get [Tutorial](https://zhuanlan.zhihu.com/p/30963256) if know Chinese
+
 #### Thanks to @jadore801120 for his [implementation](https://github.com/jadore801120/attention-is-all-you-need-pytorch)
 ---
 
