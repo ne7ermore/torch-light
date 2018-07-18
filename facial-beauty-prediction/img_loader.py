@@ -55,5 +55,6 @@ class Img_loader(object):
 
 if __name__ == "__main__":
     training_data = Img_loader("data/validation/test_1.txt", 2)
-    i, _ = next(training_data)
-    print(i)
+    i, s = next(training_data)
+    print(i.shape)
+    print(s.shape)

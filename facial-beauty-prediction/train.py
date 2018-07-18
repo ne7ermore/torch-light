@@ -15,7 +15,7 @@ class Beauty(nn.Module):
     def forward(self, x):
         out = nn.functional.relu(self.resnet(x))
         score = self.predict(out)
-        return score
+        return score.squeeze()
 
     def _reset_parameters(self):
         for p in self.resnet.parameters():

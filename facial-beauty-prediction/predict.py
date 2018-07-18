@@ -26,16 +26,18 @@ class Predict:
 
     def img2V(self, img):
         t = self.encode(Image.open(img).convert('RGB')).unsqueeze(0)
-        return Variable(t, volatile=True)
+        with torch.no_grad():
+            t = Variable(t)
+        return t
 
     def divine(self, img):
         v = self.img2V(img)
         score = self.model(v)
 
-        return round(score.data.tolist()[0][0], 3)
+        return round(score.data.tolist(), 3)
 
 
 if __name__ == "__main__":
     p = Predict()
-    score = p.divine("data/imgs/mj.jpeg")
+    score = p.divine("data/imgs/wyz.jpeg")
     print(score)
