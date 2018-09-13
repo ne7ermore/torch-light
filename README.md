@@ -23,6 +23,7 @@ Get tutorial series in [Zhuanlan](https://zhuanlan.zhihu.com/c_135985394) if kno
 * [LSTM Text classfication](https://github.com/ne7ermore/torch_light/tree/master/lstm-text-classfication)
 
 #### 2. Reinforcement Training
+* [AlphaGo-Zero](https://github.com/ne7ermore/torch_light/tree/master/alpha-zero)
 * [Image-Cap](https://github.com/ne7ermore/torch_light/tree/master/Image-Cap)
 * [Reinforced Translate](https://github.com/ne7ermore/torch_light/tree/master/reinforced-translate)
 * [Toy](https://github.com/ne7ermore/torch_light/tree/master/gym)
