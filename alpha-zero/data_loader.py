@@ -6,7 +6,7 @@ from const import *
 
 def to_tensor(x, use_cuda=USECUDA, unsqueeze=False):
     x = torch.from_numpy(x).type(torch.Tensor)
-    if USECUDA:
+    if use_cuda:
         x = x.cuda()
 
     if unsqueeze:
@@ -15,8 +15,11 @@ def to_tensor(x, use_cuda=USECUDA, unsqueeze=False):
     return x
 
 
-def to_numpy(x):
-    return x.data.cpu().numpy().flatten()
+def to_numpy(x, use_cuda=True):
+    if use_cuda:
+        return x.data.cpu().numpy().flatten()
+    else:
+        return x.data.numpy().flatten()
 
 
 class DataLoader(object):

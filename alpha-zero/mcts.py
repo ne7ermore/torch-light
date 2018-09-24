@@ -35,20 +35,10 @@ class TreeNode(object):
         self.children = [TreeNode(action=action, props=p, parent=self)
                          for action, p in enumerate(props) if p > 0.]
 
-    def add_child(self, action, props, parent):
-        self.children.append(TreeNode(action, props, parent=parent))
-
     def backup(self, v):
         self.N += 1
         self.W += v
         self.Q = self.W / self.N
-
-    def debug(self):
-        print(f"action - {self.action}")
-        print("children action")
-        for child in self.children:
-            print(child.action)
-        print("-" * 40)
 
 
 class MonteCarloTreeSearch(object):
@@ -74,8 +64,8 @@ class MonteCarloTreeSearch(object):
             # be carefull - opponent state
             value, props = self.net(
                 to_tensor(borad.gen_state(), unsqueeze=True))
-            value = to_numpy(value)[0]
-            props = to_numpy(props)
+            value = to_numpy(value, USECUDA)[0]
+            props = np.exp(to_numpy(props, USECUDA))
 
             # add dirichlet noise for root node
             if node.parent is None:
@@ -84,7 +74,9 @@ class MonteCarloTreeSearch(object):
             # normalize
             props[borad.invalid_moves] = 0.
             total_p = np.sum(props)
-            props /= total_p
+
+            if total_p > 0:
+                props /= total_p
 
             # winner, draw or continue
             if borad.is_draw():
@@ -120,5 +112,4 @@ class MonteCarloTreeSearch(object):
         pi = np.exp(pi - np.max(pi))
         pi /= np.sum(pi)
         action = np.random.choice(len(pi), p=pi)
-
         return action, pi

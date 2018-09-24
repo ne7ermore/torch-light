@@ -181,8 +181,10 @@ class ScheduledOptim(object):
   def zero_grad(self):
     self.optimizer.zero_grad()
 
-  def update_learning_rate(self, num_draw):
-    if num_draw % self.decay_draw == 0 and self.lr > .0001:
+  def update_learning_rate(self, num_draw, step):
+    print(f"draw game numbers - {num_draw}")
+
+    if (num_draw > self.decay_draw or step % 15 == 0) and self.lr > .0001:
       self.lr *= self.decay
       for param_group in self.optimizer.param_groups:
         param_group['lr'] = self.lr
