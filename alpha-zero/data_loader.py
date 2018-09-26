@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import random
 
 from const import *
 
@@ -28,45 +29,15 @@ class DataLoader(object):
         self.bsz = batch_size
 
     def __call__(self, datas):
-        self.data_size = len(datas)
-        self.step = 0
-        self.stop_step = self.data_size // self.bsz
-
+        mini_batch = random.sample(datas, self.bsz)
         states, pi, rewards = [], [], []
-        for s, p, r in datas:
+        for s, p, r in mini_batch:
             states.append(s)
             pi.append(p)
             rewards.append(r)
 
-        states = np.stack(states, axis=0)
-        pi = np.stack(pi, axis=0)
-        rewards = np.asarray(rewards)
-
-        indices = np.arange(rewards.shape[0])
-        np.random.shuffle(indices)
-
-        self.states = states[indices]
-        self.pi = pi[indices]
-        self.rewards = rewards[indices]
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.step == self.stop_step:
-            self.step = 0
-            raise StopIteration()
-
-        self.step += 1
-
-        start = self.step * self.bsz
-        bsz = min(self.bsz, self.data_size - start)
-
-        states = to_tensor(
-            self.states[start:start + bsz], use_cuda=self.cuda)
-        pi = to_tensor(
-            self.pi[start:start + bsz], use_cuda=self.cuda)
-        rewards = to_tensor(
-            self.rewards[start:start + bsz], use_cuda=self.cuda)
+        states = to_tensor(np.stack(states, axis=0), use_cuda=self.cuda)
+        pi = to_tensor(np.stack(pi, axis=0), use_cuda=self.cuda)
+        rewards = to_tensor(np.stack(rewards, axis=0), use_cuda=self.cuda)
 
         return states, pi, rewards.view(-1, 1)

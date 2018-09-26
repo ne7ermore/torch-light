@@ -166,14 +166,10 @@ class AlphaEntropy(nn.Module):
 
 
 class ScheduledOptim(object):
-  def __init__(self, optimizer, lr,
-               decay_draw=LRDECAYDRWA,
-               decay=LRDECAY):
+  def __init__(self, optimizer, lr):
 
     self.lr = lr
     self.optimizer = optimizer
-    self.decay_draw = decay_draw
-    self.decay = decay
 
   def step(self):
     self.optimizer.step()
@@ -181,13 +177,10 @@ class ScheduledOptim(object):
   def zero_grad(self):
     self.optimizer.zero_grad()
 
-  def update_learning_rate(self, num_draw, step):
-    print(f"draw game numbers - {num_draw}")
-
-    if (num_draw > self.decay_draw or step % 15 == 0) and self.lr > .0001:
-      self.lr *= self.decay
-      for param_group in self.optimizer.param_groups:
-        param_group['lr'] = self.lr
+  def update_learning_rate(self, lr_multiplier):
+    new_lr = self.lr * lr_multiplier
+    for param_group in self.optimizer.param_groups:
+      param_group['lr'] = new_lr
 
 
 if __name__ == "__main__":

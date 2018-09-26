@@ -74,7 +74,6 @@ class MonteCarloTreeSearch(object):
             # normalize
             props[borad.invalid_moves] = 0.
             total_p = np.sum(props)
-
             if total_p > 0:
                 props /= total_p
 

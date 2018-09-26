@@ -9,12 +9,12 @@ class Play(object):
         net = Net()
         if USECUDA:
             net = net.cuda()
-        net.load_model("model_2018092410.pt", cuda=USECUDA)
+        net.load_model("model_201809251044.pt", cuda=USECUDA)
         self.net = net
         self.net.eval()
 
     def go(self):
-        print("One rule:\r\n Move piece form 'x,y' \r\n Like this: 1,3\r\n")
+        print("One rule:\r\n Move piece form 'x,y' \r\n eg 1,3\r\n")
         print("-" * 60)
         print("Ready Go")
 

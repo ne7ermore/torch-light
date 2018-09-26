@@ -81,43 +81,23 @@ class Board(object):
         if player is None:
             player = self.c_player
 
-        # for i in range(x - 4, x + 5):
-        #     if self._get_piece(i, y) == self._get_piece(i + 1, y) == self._get_piece(i + 2, y) == self._get_piece(i + 3, y) == self._get_piece(i + 4, y) == player:
-        #         return True
-
-        # for j in range(y - 4, y + 5):
-        #     if self._get_piece(x, j) == self._get_piece(x, j + 1) == self._get_piece(x, j + 2) == self._get_piece(x, j + 3) == self._get_piece(x, j + 4) == player:
-        #         return True
-
-        # j = y - 4
-        # for i in range(x - 4, x + 5):
-        #     if self._get_piece(i, j) == self._get_piece(i + 1, j + 1) == self._get_piece(i + 2, j + 2) == self._get_piece(i + 3, j + 3) == self._get_piece(i + 4, j + 4) == player:
-        #         return True
-        #     j += 1
-
-        # i = x + 4
-        # for j in range(y - 4, y + 5):
-        #     if self._get_piece(i, j) == self._get_piece(i - 1, j + 1) == self._get_piece(i - 2, j + 2) == self._get_piece(i - 3, j + 3) == self._get_piece(i - 4, j + 4) == player:
-        #         return True
-        #     i -= 1
-
-        for i in range(x - 3, x + 4):
-            if self._get_piece(i, y) == self._get_piece(i + 1, y) == self._get_piece(i + 2, y) == self._get_piece(i + 3, y) == player:
+        for i in range(x - 4, x + 5):
+            if self._get_piece(i, y) == self._get_piece(i + 1, y) == self._get_piece(i + 2, y) == self._get_piece(i + 3, y) == self._get_piece(i + 4, y) == player:
                 return True
 
-        for j in range(y - 3, y + 4):
-            if self._get_piece(x, j) == self._get_piece(x, j + 1) == self._get_piece(x, j + 2) == self._get_piece(x, j + 3) == player:
+        for j in range(y - 4, y + 5):
+            if self._get_piece(x, j) == self._get_piece(x, j + 1) == self._get_piece(x, j + 2) == self._get_piece(x, j + 3) == self._get_piece(x, j + 4) == player:
                 return True
 
-        j = y - 3
-        for i in range(x - 3, x + 4):
-            if self._get_piece(i, j) == self._get_piece(i + 1, j + 1) == self._get_piece(i + 2, j + 2) == self._get_piece(i + 3, j + 3) == player:
+        j = y - 4
+        for i in range(x - 4, x + 5):
+            if self._get_piece(i, j) == self._get_piece(i + 1, j + 1) == self._get_piece(i + 2, j + 2) == self._get_piece(i + 3, j + 3) == self._get_piece(i + 4, j + 4) == player:
                 return True
             j += 1
 
-        i = x + 3
-        for j in range(y - 3, y + 4):
-            if self._get_piece(i, j) == self._get_piece(i - 1, j + 1) == self._get_piece(i - 2, j + 2) == self._get_piece(i - 3, j + 3) == player:
+        i = x + 4
+        for j in range(y - 4, y + 5):
+            if self._get_piece(i, j) == self._get_piece(i - 1, j + 1) == self._get_piece(i - 2, j + 2) == self._get_piece(i - 3, j + 3) == self._get_piece(i - 4, j + 4) == player:
                 return True
             i -= 1
 
@@ -157,12 +137,12 @@ class Board(object):
 
 
 class Game(object):
-    def __init__(self, net, evl_net=None):
+    def __init__(self, net, evl_net):
         self.net = net
         self.evl_net = evl_net
         self.board = Board()
 
-    def play(self, draw_nums):
+    def play(self):
         datas, node = [], TreeNode()
         mc = MonteCarloTreeSearch(self.net)
         move_count = 0
@@ -180,7 +160,6 @@ class Game(object):
             node = next_node
 
             if self.board.is_draw():
-                draw_nums[0] += 1
                 reward = 0.
                 break
 
@@ -218,7 +197,6 @@ class Game(object):
                 self.board, node)
 
             self.board.move(next_node.action)
-            # self.board.show()
 
             if self.board.is_draw():
                 result[0] += 1
@@ -238,8 +216,3 @@ class Game(object):
 
     def reset(self):
         self.board = Board()
-
-
-if __name__ == "__main__":
-    b = Board()
-    b.show()
