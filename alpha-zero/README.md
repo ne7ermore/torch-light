@@ -23,3 +23,9 @@ python3 play.py
 ```
 python3 train.py
 ```
+
+## Result
+
+> 自我对弈1300
+
+<p align="center"><img src="record/1300.gif" style="height: 600px" /></p>
