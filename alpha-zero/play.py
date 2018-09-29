@@ -9,7 +9,7 @@ class Play(object):
         net = Net()
         if USECUDA:
             net = net.cuda()
-        net.load_model("model_201809271025.pt", cuda=USECUDA)
+        net.load_model("model_201809251044.pt", cuda=USECUDA)
         self.net = net
         self.net.eval()
 
@@ -24,7 +24,7 @@ class Play(object):
 
         while True:
             if board.c_player == BLACK:
-                action = input("Your move: ")
+                action = input(f"Your piece is 'O' and move: ")
                 action = [int(n, 10) for n in action.split(",")]
                 action = action[0] * board.size + action[1]
                 next_node = TreeNode(action=action)

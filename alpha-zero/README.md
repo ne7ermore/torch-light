@@ -28,4 +28,8 @@ python3 train.py
 
 > self play 1300 games
 
-<p align="center"><img src="record/1300.gif" style="height: 600px" /></p>
+<p align="center"><img src="record/1300.gif" style="height: 400px" /></p>
+
+> self play 2400 games
+
+<p align="center"><img src="record/2400.gif" style="height: 400px" /></p>
