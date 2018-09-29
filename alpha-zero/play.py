@@ -9,7 +9,7 @@ class Play(object):
         net = Net()
         if USECUDA:
             net = net.cuda()
-        net.load_model("model_201809251044.pt", cuda=USECUDA)
+        net.load_model("model.pt", cuda=USECUDA)
         self.net = net
         self.net.eval()
 

@@ -145,11 +145,12 @@ class Net(nn.Module):
     torch.save(self.state_dict(), path)
 
   def load_model(self, path="model.pt", cuda=True):
-    self.load_state_dict(torch.load(path))
-
     if cuda:
+      self.load_state_dict(torch.load(path))
       self.cuda()
     else:
+      self.load_state_dict(torch.load(
+          path, map_location=lambda storage, loc: storage))
       self.cpu()
 
 
