@@ -37,7 +37,6 @@ class Model(nn.Module):
         self.emb.weight.data.uniform_(-stdv, stdv)
 
         self.transform_A.weight.data.uniform_(-stdv, stdv)
-        self.transform_A.bias.data.fill_(0)
 
         self.match_vec.weight.data.uniform_(-stdv, stdv)
         self.match_vec.bias.data.fill_(0)
