@@ -3,7 +3,6 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 
 class Model(nn.Module):
@@ -14,19 +13,19 @@ class Model(nn.Module):
             self.__setattr__(k, v)
 
         self.emb = nn.Embedding(self.dict_size, self.emb_dim)
-        self.first_gru = torch.nn.GRU(input_size=self.emb_dim,
-                                      hidden_size=self.first_rnn_hsz,
-                                      num_layers=1,
-                                      batch_first=True)
+        self.first_gru = nn.GRU(input_size=self.emb_dim,
+                                hidden_size=self.first_rnn_hsz,
+                                num_layers=1,
+                                batch_first=True)
         self.transform_A = nn.Linear(
             self.first_rnn_hsz, self.first_rnn_hsz, bias=False)
         self.cnn = nn.Conv2d(in_channels=2,
                              out_channels=self.fillters,
                              kernel_size=self.kernel_size)
         self.match_vec = nn.Linear(16 * 16 * 8, self.match_vec_dim)
-        self.second_gru = torch.nn.GRU(input_size=self.match_vec_dim,
-                                       hidden_size=self.second_rnn_hsz,
-                                       num_layers=1)
+        self.second_gru = nn.GRU(input_size=self.match_vec_dim,
+                                 hidden_size=self.second_rnn_hsz,
+                                 num_layers=1)
         self.pred = nn.Linear(self.match_vec_dim, 2)
 
         self._reset_parameters()

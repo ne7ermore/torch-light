@@ -1,10 +1,13 @@
 import numpy as np
 import pickle
+import torch
+
 
 class MiddleDataHandler(object):
     """
     save and load data for train
     """
+
     def __init__(self):
         self.pk = pickle
 
@@ -25,6 +28,7 @@ class MiddleDataHandler(object):
             obj
         """
         return self.pk.load(open(_file, "rb"))
+
 
 def load_pre_w2c(_file, _dict):
     """
@@ -48,7 +52,8 @@ def load_pre_w2c(_file, _dict):
         temp = line.strip().split(" ")
 
         # discard first line
-        if len(temp) < 10: continue
+        if len(temp) < 10:
+            continue
         w2c_dict[temp[0]] = list(map(float, temp[1:]))
 
         # length of vec, just one time
@@ -62,3 +67,11 @@ def load_pre_w2c(_file, _dict):
             emb_mx[idx] = np.asarray(w2c_dict[word])
 
     return emb_mx
+
+
+def to_one_hot(y, n_dims=None):
+    y_tensor = torch.tensor(y, dtype=torch.int64).view(-1, 1)
+    n_dims = n_dims if n_dims is not None else int(torch.max(y_tensor)) + 1
+    y_one_hot = torch.zeros(
+        y_tensor.size()[0], n_dims).scatter_(1, y_tensor, 1)
+    return y_one_hot
