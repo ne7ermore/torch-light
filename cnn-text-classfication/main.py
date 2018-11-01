@@ -44,20 +44,20 @@ args.label_size = data['dict']['label_size']
 args.filter_sizes = list(map(int, args.filter_sizes.split(",")))
 
 training_data = DataLoader(
-             data['train']['src'],
-             data['train']['label'],
-             args.max_len,
-             batch_size=args.batch_size,
-             cuda=use_cuda)
+    data['train']['src'],
+    data['train']['label'],
+    args.max_len,
+    batch_size=args.batch_size,
+    cuda=use_cuda)
 
 validation_data = DataLoader(
-              data['valid']['src'],
-              data['valid']['label'],
-              args.max_len,
-              batch_size=args.batch_size,
-              shuffle=False,
-              cuda=use_cuda,
-              evaluation=True)
+    data['valid']['src'],
+    data['valid']['label'],
+    args.max_len,
+    batch_size=args.batch_size,
+    shuffle=False,
+    cuda=use_cuda,
+    evaluation=True)
 
 # ##############################################################################
 # Build model
@@ -81,35 +81,39 @@ train_loss = []
 valid_loss = []
 accuracy = []
 
+
 def evaluate():
     cnn.eval()
     corrects = eval_loss = 0
     _size = validation_data.sents_size
     for data, label in tqdm(validation_data, mininterval=0.2,
-                desc='Evaluate Processing', leave=False):
+                            desc='Evaluate Processing', leave=False):
         pred = cnn(data)
         loss = criterion(pred, label)
 
         eval_loss += loss.data[0]
-        corrects += (torch.max(pred, 1)[1].view(label.size()).data == label.data).sum()
+        corrects += (torch.max(pred, 1)
+                     [1].view(label.size()).data == label.data).sum()
 
-    return eval_loss/_size, corrects, corrects/_size * 100.0, _size
+    return eval_loss / _size, corrects, corrects / _size * 100.0, _size
+
 
 def train():
     cnn.train()
     total_loss = 0
     for data, label in tqdm(training_data, mininterval=1,
-                desc='Train Processing', leave=False):
+                            desc='Train Processing', leave=False):
         optimizer.zero_grad()
-
         target = cnn(data)
+
         loss = criterion(target, label)
 
         loss.backward()
         optimizer.step()
 
         total_loss += loss.data
-    return total_loss[0]/training_data.sents_size
+    return total_loss[0] / training_data.sents_size
+
 
 # ##############################################################################
 # Save Model
@@ -119,20 +123,22 @@ total_start_time = time.time()
 
 try:
     print('-' * 90)
-    for epoch in range(1, args.epochs+1):
+    for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
         loss = train()
-        train_loss.append(loss*1000.)
+        train_loss.append(loss * 1000.)
 
-        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(epoch, time.time() - epoch_start_time, loss))
+        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(
+            epoch, time.time() - epoch_start_time, loss))
 
         loss, corrects, acc, size = evaluate()
-        valid_loss.append(loss*1000.)
+        valid_loss.append(loss * 1000.)
         accuracy.append(acc / 100.)
 
         epoch_start_time = time.time()
         print('-' * 90)
-        print('| end of epoch {:3d} | time: {:2.2f}s | loss {:.4f} | accuracy {:.4f}%({}/{})'.format(epoch, time.time() - epoch_start_time, loss, acc, corrects, size))
+        print('| end of epoch {:3d} | time: {:2.2f}s | loss {:.4f} | accuracy {:.4f}%({}/{})'.format(
+            epoch, time.time() - epoch_start_time, loss, acc, corrects, size))
         print('-' * 90)
         if not best_acc or best_acc < corrects:
             best_acc = corrects
@@ -144,5 +150,6 @@ try:
             }
             torch.save(model_source, args.save)
 except KeyboardInterrupt:
-    print("-"*90)
-    print("Exiting from training early | cost time: {:5.2f}min".format((time.time() - total_start_time)/60.0))
+    print("-" * 90)
+    print("Exiting from training early | cost time: {:5.2f}min".format(
+        (time.time() - total_start_time) / 60.0))

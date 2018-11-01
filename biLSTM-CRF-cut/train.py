@@ -4,7 +4,7 @@ import torch
 import torch.autograd as autograd
 import torch.nn.functional as F
 
-parser = argparse.ArgumentParser(description='CNN Ranking')
+parser = argparse.ArgumentParser()
 parser.add_argument('--epochs', type=int, default=32,
                     help='number of epochs for train [default: 32]')
 parser.add_argument('--batch-size', type=int, default=64,
@@ -51,19 +51,19 @@ args.tag_size = data["tag_size"]
 args.vocab_size = data['dict']['vocab_size']
 args.trains_score = data['trains_score']
 training_data = DataLoader(
-             data['train']['src'],
-             data['train']['label'],
-             args.max_len,
-             batch_size=args.batch_size,
-             cuda=use_cuda)
+    data['train']['src'],
+    data['train']['label'],
+    args.max_len,
+    batch_size=args.batch_size,
+    cuda=use_cuda)
 
 validation_data = DataLoader(
-              data['valid']['src'],
-              data['valid']['label'],
-              args.max_len,
-              batch_size=args.batch_size,
-              shuffle=False,
-              cuda=use_cuda)
+    data['valid']['src'],
+    data['valid']['label'],
+    args.max_len,
+    batch_size=args.batch_size,
+    shuffle=False,
+    cuda=use_cuda)
 
 args.n_warmup_steps = args.n_warmup_steps if args.n_warmup_steps != 0 else training_data.sents_size // args.batch_size
 
@@ -75,12 +75,12 @@ from optim import ScheduledOptim
 
 model = BiLSTM_Cut(args)
 if use_cuda:
-   model = model.cuda()
+    model = model.cuda()
 
 optimizer = ScheduledOptim(
-            torch.optim.Adam(model.parameters(),
-                            betas=(0.9, 0.98), eps=1e-09),
-            args.lstm_hsz, args.n_warmup_steps)
+    torch.optim.Adam(model.parameters(),
+                     betas=(0.9, 0.98), eps=1e-09),
+    args.lstm_hsz, args.n_warmup_steps)
 
 criterion = torch.nn.CrossEntropyLoss()
 
@@ -89,6 +89,7 @@ criterion = torch.nn.CrossEntropyLoss()
 # ##############################################################################
 import time
 from tqdm import tqdm
+
 
 def evaluate():
     model.eval()
@@ -100,10 +101,12 @@ def evaluate():
         pred = model(src)
         loss = criterion(pred, label)
         eval_loss += loss.data[0]
-        corrects += (torch.max(pred, 1)[1].view(label.size()).data == label.data).sum()
+        corrects += (torch.max(pred, 1)
+                     [1].view(label.size()).data == label.data).sum()
 
     _size *= args.max_len
-    return eval_loss/_size, corrects, corrects/_size * 100.0, _size
+    return eval_loss / _size, corrects, corrects / _size * 100.0, _size
+
 
 def train():
     model.train()
@@ -122,7 +125,8 @@ def train():
         optimizer.step()
         optimizer.update_learning_rate()
         total_loss += loss.data
-    return total_loss[0]/(_size*args.max_len)
+    return total_loss[0] / (_size * args.max_len)
+
 
 # ##############################################################################
 # Save Model
@@ -131,15 +135,17 @@ best_acc = None
 total_start_time = time.time()
 try:
     print('-' * 90)
-    for epoch in range(1, args.epochs+1):
+    for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
         loss = train()
-        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(epoch, time.time() - epoch_start_time, loss))
+        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(
+            epoch, time.time() - epoch_start_time, loss))
 
         loss, corrects, acc, size = evaluate()
         epoch_start_time = time.time()
         print('-' * 90)
-        print('| end of epoch {:3d} | time: {:2.2f}s | loss {:.4f} | accuracy {:.4f}%({}/{})'.format(epoch, time.time() - epoch_start_time, loss, acc, corrects, size))
+        print('| end of epoch {:3d} | time: {:2.2f}s | loss {:.4f} | accuracy {:.4f}%({}/{})'.format(
+            epoch, time.time() - epoch_start_time, loss, acc, corrects, size))
         print('-' * 90)
 
         model_state_dict = model.state_dict()
@@ -156,5 +162,6 @@ try:
             torch.save(model_source, "{}_{}".format(args.save, epoch))
 
 except KeyboardInterrupt:
-    print("-"*80)
-    print("Exiting from training early | cost time: {:5.2f}min".format((time.time() - total_start_time)/60.0))
+    print("-" * 80)
+    print("Exiting from training early | cost time: {:5.2f}min".format(
+        (time.time() - total_start_time) / 60.0))

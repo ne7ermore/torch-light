@@ -7,7 +7,7 @@ Get [Tutorial](https://zhuanlan.zhihu.com/p/31629002) if know Chinese
 
 ## Requirement
 * python 3.6
-* pytorch 0.3.1
+* pytorch 0.4.1
 * numpy 1.13.1
 * tqdm
 

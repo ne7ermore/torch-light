@@ -1,11 +1,11 @@
 import numpy as np
 import torch
-from torch.autograd import Variable
 import const
+
 
 class DataLoader(object):
     def __init__(self, src_sents, label, max_len, cuda=True,
-                batch_size=64, shuffle=True, evaluation=False):
+                 batch_size=64, shuffle=True, evaluation=False):
         self.cuda = cuda
         self.sents_size = len(src_sents)
         self._step = 0
@@ -30,9 +30,10 @@ class DataLoader(object):
 
     def __next__(self):
         def pad_to_longest(insts, max_len):
-            inst_data = np.array([inst + [const.PAD] * (max_len - len(inst)) for inst in insts])
+            inst_data = np.array(
+                [inst + [const.PAD] * (max_len - len(inst)) for inst in insts])
 
-            inst_data_tensor = Variable(torch.from_numpy(inst_data), volatile=self.evaluation)
+            inst_data_tensor = torch.from_numpy(inst_data)
             if self.cuda:
                 inst_data_tensor = inst_data_tensor.cuda()
             return inst_data_tensor
@@ -41,12 +42,12 @@ class DataLoader(object):
             self._step = 0
             raise StopIteration()
 
-        _start = self._step*self._batch_size
-        _bsz = min(self._batch_size, self.sents_size-_start)
+        _start = self._step * self._batch_size
+        _bsz = min(self._batch_size, self.sents_size - _start)
         self._step += 1
-        data = pad_to_longest(self._src_sents[_start:_start+_bsz], self._max_len)
-        label = Variable(torch.from_numpy(self._label[_start:_start+_bsz]),
-                    volatile=self.evaluation)
+        data = pad_to_longest(
+            self._src_sents[_start:_start + _bsz], self._max_len)
+        label = torch.from_numpy(self._label[_start:_start + _bsz])
         if self.cuda:
             label = label.cuda()
 

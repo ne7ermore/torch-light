@@ -121,7 +121,7 @@ def evaluate():
         corrects += (pred.data == label.data).sum()
 
     _size = validation_data.sents_size * args.word_max_len
-    return eval_loss / _size, corrects, float(corrects) / _size * 100, _size
+    return eval_loss / validation_data._stop_step, corrects, float(corrects) / _size * 100, _size
 
 
 def train():
@@ -137,7 +137,7 @@ def train():
         optimizer.step()
         optimizer.update_learning_rate()
         total_loss += loss.data
-    return total_loss / training_data.sents_size / args.word_max_len
+    return total_loss / training_data._stop_step
 
 
 # ##############################################################################

@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class CNN_Text(nn.Module):
     def __init__(self, args):
         super().__init__()
@@ -14,13 +15,13 @@ class CNN_Text(nn.Module):
         for i, filter_size in enumerate(self.filter_sizes):
             enc_attr_name = "encoder_%d" % i
             self.__setattr__(enc_attr_name,
-                            nn.Conv2d(in_channels=1,
-                            out_channels=self.kernel_num,
-                            kernel_size=(filter_size, self.embed_dim)))
+                             nn.Conv2d(in_channels=1,
+                                       out_channels=self.kernel_num,
+                                       kernel_size=(filter_size, self.embed_dim)))
             self.encoders.append(self.__getattr__(enc_attr_name))
 
         self.logistic = nn.Linear(len(self.filter_sizes) * self.kernel_num,
-                                self.label_size)
+                                  self.label_size)
 
         self.dropout = nn.Dropout(self.dropout)
 
@@ -50,4 +51,3 @@ class CNN_Text(nn.Module):
     def _init_weight(self, scope=.1):
         self.lookup_table.weight.data.uniform_(-scope, scope)
         self.logistic.weight.data.uniform_(-scope, scope)
-
