@@ -6,7 +6,7 @@ Module implemention from "[Deep Semantic Role Labeling: What Works and What’s 
 </p>
 
 ## Tutorial
-Get [Tutorial]() if know Chinese
+Get [Tutorial](https://ne7ermore.github.io/post/deep-srl/) if know Chinese
 
 ## Requirement
 * python 3.6
@@ -37,6 +37,29 @@ python3 train.py
 ```
 
 ## Result
+
+label
+```
+{'<pad>': 0, 'B-MISC': 1, 'B-ORG': 2, 'I-MISC': 3, 'I-LOC': 4, 'I-PER': 5, 'B-LOC': 6, 'O': 7, 'I-ORG': 8}
+```
+
+result.1
+```
+sample: neuchatel @ st gallen @
+
+predict: I-ORG O I-ORG I-ORG O
+
+groud truth: I-ORG O I-ORG I-ORG O
+```
+
+result.2
+```
+sample: kankkunen has set an astonishing pace for a driver who has not rallied for three months .
+
+predict: I-PER O O O I-PER O O O O O O O O O O O O
+
+groud truth: I-PER O O O O O O O O O O O O O O O O
+```
 
 <p align="center">
 <img src="data/train-corr.png" width="900">
