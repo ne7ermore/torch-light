@@ -38,9 +38,17 @@ python3 train.py
 
 ## Result
 <p align="center">
-<img src="data/eval.png" width="600">
+<img src="data/eval-corr.png" width="900">
 </p>
 
 <p align="center">
-<img src="data/train.png" width="600">
+<img src="data/train-corr.png" width="900">
+</p>
+
+<p align="center">
+<img src="data/eval-loss.png" width="900">
+</p>
+
+<p align="center">
+<img src="data/train-loss.png" width="900">
 </p>

@@ -33,7 +33,7 @@ class Predict(object):
 if __name__ == "__main__":
     from data_loader import DataLoader
 
-    p = Predict("weights/model_14.pt", True)
+    p = Predict("weights/model_22.pt", True)
 
     data = torch.load("data/corpus.pt")
     validation_data = DataLoader(data['train']['word'],
@@ -42,8 +42,22 @@ if __name__ == "__main__":
                                  shuffle=True,
                                  batch_size=2)
 
-    word, label = next(validation_data)
-    pred = p.model(word)
+    d = {v: k for k, v in data["dict"]["word"].items()}
+    l = {v: k for k, v in data["dict"]["label"].items()}
+    words, label = next(validation_data)
+    pred = p.model(words)
     score, idxs = torch.max(pred, 1)
-    print(idxs)
-    print(label)
+
+    for word in words.tolist():
+        print(" ".join([d[w] for w in word]))
+        print()
+
+    idxs = idxs.view(2, -1)
+    for idx in idxs.tolist():
+        print(" ".join([l[_id] for _id in idx]))
+        print()
+
+    label = label.view(2, -1)
+    for idx in label.tolist():
+        print(" ".join([l[_id] for _id in idx]))
+        print()

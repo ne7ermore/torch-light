@@ -11,9 +11,11 @@ from const import *
 
 def normalizeString(s):
     s = s.lower().strip()
-    s = re.sub(r"([.!?])", r" \1", s)
-    s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
-    return s
+    try:
+        float(s)
+        return "@"
+    except:
+        return s
 
 
 def word2idx(sents, word2idx):
