@@ -17,57 +17,57 @@ Get tutorial series in [Zhuanlan](https://zhuanlan.zhihu.com/c_135985394) if kno
 
 #### 1. Basics
 
-* [Cbow](https://github.com/ne7ermore/torch_light/tree/master/cbow)
-* [N-Gram](https://github.com/ne7ermore/torch_light/tree/master/ngram)
-* [CNN Text classfication](https://github.com/ne7ermore/torch_light/tree/master/cnn-text-classfication)
-* [LSTM Text classfication](https://github.com/ne7ermore/torch_light/tree/master/lstm-text-classfication)
+* [Cbow](https://github.com/ne7ermore/torch-light/tree/master/cbow)
+* [N-Gram](https://github.com/ne7ermore/torch-light/tree/master/ngram)
+* [CNN Text classfication](https://github.com/ne7ermore/torch-light/tree/master/cnn-text-classfication)
+* [LSTM Text classfication](https://github.com/ne7ermore/torch-light/tree/master/lstm-text-classfication)
 
 #### 2. Reinforcement Training
-* [AlphaGo-Zero](https://github.com/ne7ermore/torch_light/tree/master/alpha-zero)
-* [Image-Cap](https://github.com/ne7ermore/torch_light/tree/master/Image-Cap)
-* [Reinforced Translate](https://github.com/ne7ermore/torch_light/tree/master/reinforced-translate)
-* [Toy](https://github.com/ne7ermore/torch_light/tree/master/gym)
+* [AlphaGo-Zero](https://github.com/ne7ermore/torch-light/tree/master/alpha-zero)
+* [Image-Cap](https://github.com/ne7ermore/torch-light/tree/master/Image-Cap)
+* [Reinforced Translate](https://github.com/ne7ermore/torch-light/tree/master/reinforced-translate)
+* [Toy](https://github.com/ne7ermore/torch-light/tree/master/gym)
 
 #### 3. NLP
-* [Poetry VAE-NLG](https://github.com/ne7ermore/torch_light/tree/master/vae-nlg)
-* [Seq2seq](https://github.com/ne7ermore/torch_light/tree/master/seq2seq)
-* [BiLSTM CRF NER](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF)
-* [LSTM CNNs CRF](https://github.com/ne7ermore/torch_light/tree/master/LSTM-CNNs-CRF)
-* [Chinese Poetry NLG](https://github.com/ne7ermore/torch_light/tree/master/ch-poetry-nlg)
-* [BiMPM](https://github.com/ne7ermore/torch_light/tree/master/biMPM)
-* [Pair Ranking Cnn](https://github.com/ne7ermore/torch_light/tree/master/pair-ranking-cnn)
-* [BiLSTM CRF](https://github.com/ne7ermore/torch_light/tree/master/biLSTM-CRF-cut)
-* [Capsule Text classfication](https://github.com/ne7ermore/torch_light/tree/master/capsule-classfication)
-* [Retrieval Based Chatbots](https://github.com/ne7ermore/torch_light/tree/master/retrieval-based-chatbots)
-* [Hierarchical for Summarization and Classification](https://github.com/ne7ermore/torch_light/tree/master/hierarchical-sc)
-* [Deep SRL](https://github.com/ne7ermore/torch_light/tree/master/deep-srl)
+* [Poetry VAE-NLG](https://github.com/ne7ermore/torch-light/tree/master/vae-nlg)
+* [Seq2seq](https://github.com/ne7ermore/torch-light/tree/master/seq2seq)
+* [BiLSTM CRF NER](https://github.com/ne7ermore/torch-light/tree/master/biLSTM-CRF)
+* [LSTM CNNs CRF](https://github.com/ne7ermore/torch-light/tree/master/LSTM-CNNs-CRF)
+* [Chinese Poetry NLG](https://github.com/ne7ermore/torch-light/tree/master/ch-poetry-nlg)
+* [BiMPM](https://github.com/ne7ermore/torch-light/tree/master/biMPM)
+* [Pair Ranking Cnn](https://github.com/ne7ermore/torch-light/tree/master/pair-ranking-cnn)
+* [BiLSTM CRF](https://github.com/ne7ermore/torch-light/tree/master/biLSTM-CRF-cut)
+* [Capsule Text classfication](https://github.com/ne7ermore/torch-light/tree/master/capsule-classfication)
+* [Retrieval Based Chatbots](https://github.com/ne7ermore/torch-light/tree/master/retrieval-based-chatbots)
+* [Hierarchical for Summarization and Classification](https://github.com/ne7ermore/torch-light/tree/master/hierarchical-sc)
+* [Deep SRL](https://github.com/ne7ermore/torch-light/tree/master/deep-srl)
 
 #### 4. Vision
-* [DenseNet](https://github.com/ne7ermore/torch_light/tree/master/DenseNet)
-* [Neural Style](https://github.com/ne7ermore/torch_light/tree/master/neural-artistic-style)
-* [DC Gan](https://github.com/ne7ermore/torch_light/tree/master/dc-gan)
-* [Facial Beauty Prediction](https://github.com/ne7ermore/torch_light/tree/master/facial-beauty-prediction)
+* [DenseNet](https://github.com/ne7ermore/torch-light/tree/master/DenseNet)
+* [Neural Style](https://github.com/ne7ermore/torch-light/tree/master/neural-artistic-style)
+* [DC Gan](https://github.com/ne7ermore/torch-light/tree/master/dc-gan)
+* [Facial Beauty Prediction](https://github.com/ne7ermore/torch-light/tree/master/facial-beauty-prediction)
 
 #### 5. Special Things
-* [Customize](https://github.com/ne7ermore/torch_light/tree/master/Customize)
+* [Customize](https://github.com/ne7ermore/torch-light/tree/master/Customize)
 
 ## Getting Started
 
 ### clone code
 ```
-$ git clone git@github.com:ne7ermore/torch_light.git
+$ git clone git@github.com:ne7ermore/torch-light.git
 ```
 ### train
 
 ```
-$ cd torch_light/project
+$ cd torch-light/project
 $ python3 main.py
 ```
 
 or
 
 ```
-$ cd torch_light/project
+$ cd torch-light/project
 $ python3 corpus.py
 $ python3 main.py
 ```
@@ -75,7 +75,7 @@ $ python3 main.py
 or
 
 ```
-$ cd torch_light/project
+$ cd torch-light/project
 $ python3 corpus.py
 $ python3 train.py
 ```
@@ -85,10 +85,10 @@ If you find this code useful for your research, please cite:
 ```
 @misc{TaoTorchLight,
   author = {Ne7ermore Tao},
-  title = {torch_light},
+  title = {torch-light},
   publisher = {GitHub},
   year = {2018},
-  howpublished = {\url{https://github.com/ne7ermore/torch_light}}
+  howpublished = {\url{https://github.com/ne7ermore/torch-light}}
 }
 ```
 
