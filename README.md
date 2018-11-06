@@ -41,6 +41,7 @@ Get tutorial series in [Zhuanlan](https://zhuanlan.zhihu.com/c_135985394) if kno
 * [Retrieval Based Chatbots](https://github.com/ne7ermore/torch-light/tree/master/retrieval-based-chatbots)
 * [Hierarchical for Summarization and Classification](https://github.com/ne7ermore/torch-light/tree/master/hierarchical-sc)
 * [Deep SRL](https://github.com/ne7ermore/torch-light/tree/master/deep-srl)
+* [BERT](https://github.com/ne7ermore/torch-light/tree/master/BERT)
 
 #### 4. Vision
 * [DenseNet](https://github.com/ne7ermore/torch-light/tree/master/DenseNet)
