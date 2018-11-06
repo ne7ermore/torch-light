@@ -4,8 +4,6 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
-PAD = 0
-
 
 class model(nn.Module):
     def __init__(self, vocab_size, label_size, max_len, embed_dim=128, dropout=0.5):
@@ -34,7 +32,7 @@ class DS(Dataset):
 
     def __getitem__(self, item):
         def pad_to_longest(inst, max_len):
-            inst_data = np.array(inst + [PAD] * (max_len - len(inst)))
+            inst_data = np.array(inst + [0] * (max_len - len(inst)))
             inst_data_tensor = torch.from_numpy(inst_data)
             return inst_data_tensor
 
@@ -48,7 +46,7 @@ data = torch.load("corpus.pt")
 ds = DS(data['train']['src'],
         data['train']['label'],
         data["max_len"])
-train_data_loader = DataLoader(ds, batch_size=64, num_workers=3)
+train_data_loader = DataLoader(ds, batch_size=64, num_workers=6)
 use_cuda = torch.cuda.is_available()
 
 device_ids = [0, 1, 2]
@@ -64,7 +62,7 @@ criterion = torch.nn.CrossEntropyLoss()
 
 
 gpu_num = torch.cuda.device_count()
-cnn = torch.nn.DataParallel(cnn, device_ids=device_ids).cuda()
+cnn = torch.nn.DataParallel(cnn, device_ids=device_ids)
 
 
 if __name__ == "__main__":

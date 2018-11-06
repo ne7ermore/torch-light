@@ -95,7 +95,7 @@ def evaluate():
         corrects += (torch.max(pred, 1)
                      [1].view(label.size()).data == label.data).sum()
 
-    return eval_loss / _size, corrects, corrects / _size * 100.0, _size
+    return eval_loss / _size, corrects, float(corrects) / _size * 100.0, _size
 
 
 def train():
