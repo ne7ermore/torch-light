@@ -75,3 +75,17 @@ def to_one_hot(y, n_dims=None):
     y_one_hot = torch.zeros(
         y_tensor.size()[0], n_dims).scatter_(1, y_tensor, 1)
     return y_one_hot
+
+
+def is_chinese_char(c):
+    if ((c >= 0x4E00 and c <= 0x9FFF) or
+            (c >= 0x3400 and c <= 0x4DBF) or
+            (c >= 0x20000 and c <= 0x2A6DF) or
+            (c >= 0x2A700 and c <= 0x2B73F) or
+            (c >= 0x2B740 and c <= 0x2B81F) or
+            (c >= 0x2B820 and c <= 0x2CEAF) or
+            (c >= 0xF900 and c <= 0xFAFF) or
+            (c >= 0x2F800 and c <= 0x2FA1F)):
+        return True
+
+    return False

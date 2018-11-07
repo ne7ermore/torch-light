@@ -45,15 +45,13 @@ class BERTDataSet(Dataset):
     def gather_word(self, sent):
         label = []
         for idx, word in enumerate(sent):
-            prob = random.random()
-            if prob < RANDOM_WORD_SAMPLE:
-                prob /= RANDOM_WORD_SAMPLE
 
-                if prob < RANDOM_MARK:
+            if random.random() < RANDOM_WORD_SAMPLE:
+                if random.random() < RANDOM_MARK:
                     sent[idx] = MASK
-                elif prob < RANDOM_WORD:
-                    sent[idx] = np.random.choice(self.word_size, 1)[0]
-
+                else:
+                    if random.random() < RANDOM_WORD:
+                        sent[idx] = np.random.choice(self.word_size, 1)[0]
                 label.append(word)
             else:
                 label.append(PAD)
@@ -86,13 +84,15 @@ if __name__ == "__main__":
     from torch.utils.data import DataLoader
 
     data = torch.load("data/corpus.pt")
-    ds = BERTDataSet(data["word"], data["max_len"], data["dict"])
-    train_data_loader = DataLoader(ds, batch_size=2, num_workers=5)
+    ds = BERTDataSet(data["word"], data["max_len"], data["dict"], 100)
+    train_data_loader = DataLoader(ds, batch_size=50, num_workers=5)
     for inp, pos, sent_label, word_label, segment_label in train_data_loader:
-        print("=" * 90)
-        print(inp.shape)
-        print(pos.shape)
-        print(sent_label.shape)
+        # print("=" * 90)
+        # print(inp.shape)
+        # print(pos.shape)
+        # print(sent_label.shape)
+        # print(word_label.shape)
+        # print(segment_label.shape)
+        # print("=" * 90)
         print(word_label.shape)
-        print(segment_label.shape)
-        print("=" * 90)
+        print((word_label > 0).float().sum())

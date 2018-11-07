@@ -44,7 +44,7 @@ class LayerNorm(nn.Module):
 
 class GELU(nn.Module):
     def forward(self, x):
-        return 0.5 * x * (1 + torch.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * torch.pow(x, 3))))
+        return x * 0.5 * (1.0 + torch.erf(x / math.sqrt(2.0)))
 
 
 class PositionWise(nn.Module):
@@ -123,10 +123,10 @@ class MultiHeadAtt(nn.Module):
         return self.lm(outputs + residual)
 
     def reset_parameters(self):
-        init.xavier_normal_(self.w_qs)
-        init.xavier_normal_(self.w_ks)
-        init.xavier_normal_(self.w_vs)
-        init.xavier_normal_(self.w_o.weight)
+        self.w_qs.data.normal_(INIT_RANGE)
+        self.w_ks.data.normal_(INIT_RANGE)
+        self.w_vs.data.normal_(INIT_RANGE)
+        self.w_o.weight.data.normal_(INIT_RANGE)
 
 
 class EncoderLayer(nn.Module):
@@ -140,6 +140,19 @@ class EncoderLayer(nn.Module):
             enc_input, enc_input, enc_input, slf_attn_mask)
         enc_output = self.pw(enc_output)
         return enc_output
+
+
+class Pooler(nn.Module):
+    def __init__(self, d_model):
+        super().__init__()
+
+        self.linear = nn.Linear(d_model, d_model)
+        self.linear.weight.data.normal_(INIT_RANGE)
+        self.linear.bias.data.zero_()
+
+    def forward(self, x):
+        x = self.linear(x[:, 0])
+        return F.tanh(x)
 
 
 class BERT(nn.Module):
@@ -160,16 +173,22 @@ class BERT(nn.Module):
         self.encodes = nn.ModuleList([
             EncoderLayer(d_model, d_ff, n_head, dropout) for _ in range(n_enc)])
 
+        self.pooler = Pooler(d_model)
+
         self.sent_predict = nn.Linear(d_model, 2)
         self.word_predict = nn.Linear(d_model, vsz)
 
         self.reset_parameters()
 
     def reset_parameters(self):
-        init.xavier_normal_(self.enc_ebd.weight)
-        init.xavier_normal_(self.seg_ebd.weight)
-        init.xavier_normal_(self.sent_predict.weight)
-        init.xavier_normal_(self.word_predict.weight)
+        self.enc_ebd.weight.data.normal_(INIT_RANGE)
+        self.seg_ebd.weight.data.normal_(INIT_RANGE)
+
+        self.sent_predict.weight.data.normal_(INIT_RANGE)
+        self.sent_predict.bias.data.zero_()
+
+        self.word_predict.weight.data.normal_(INIT_RANGE)
+        self.word_predict.bias.data.zero_()
 
     def forward(self, inp, pos, segment_label):
         encode = self.enc_ebd(
@@ -182,7 +201,7 @@ class BERT(nn.Module):
         for layer in self.encodes:
             encode = layer(encode, slf_attn_mask)
 
-        sent = F.log_softmax(self.sent_predict(encode[:, 0]), dim=-1)
+        sent = F.log_softmax(self.sent_predict(self.pooler(encode)), dim=-1)
         word = F.log_softmax(self.word_predict(encode), dim=-1)
 
         return word, sent
@@ -236,13 +255,14 @@ if __name__ == "__main__":
     from torch.utils.data import DataLoader
 
     data = torch.load("data/corpus.pt")
-    ds = data_loader.BERTDataSet(data["word"], data["max_len"], data["dict"])
-    train_data_loader = DataLoader(ds, batch_size=11, num_workers=5)
-
+    ds = data_loader.BERTDataSet(
+        data["word"], data["max_len"], data["dict"], 10000)
+    train_data_loader = DataLoader(ds, batch_size=128, num_workers=5)
+    s_criterion = torch.nn.CrossEntropyLoss()
     device_ids = [0, 2]
-    b = BERT(ds.word_size, 128, 12, 2, 8, 2, 0.1)
+    b = BERT(ds.word_size, data["max_len"], 6, 128, 512, 4, 0.1)
     b = b.cuda(device_ids[0])
-    b = torch.nn.DataParallel(b, device_ids=device_ids)
+    # b = torch.nn.DataParallel(b, device_ids=device_ids)
     for datas in train_data_loader:
         inp, pos, sent_label, word_label, segment_label = list(
             map(lambda x: x.cuda(device_ids[0]), datas))
@@ -250,3 +270,6 @@ if __name__ == "__main__":
         word, sent = b(inp, pos, segment_label)
         print(word.shape)
         print(sent.shape)
+        print(sent_label.shape)
+
+        s_criterion(sent, sent_label.view(-1))
