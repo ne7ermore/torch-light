@@ -19,12 +19,11 @@ def position(n_position, d_model):
     return torch.from_numpy(position_enc).float()
 
 
-def get_attn_padding_mask(seq_q, seq_k):
-    assert seq_q.dim() == 2 and seq_k.dim() == 2
+def get_attn_padding_mask(seq_q):
+    assert seq_q.dim() == 2
     bsz, len_q = seq_q.size()
-    _, len_k = seq_k.size()
-    pad_attn_mask = seq_k.data.eq(PAD).unsqueeze(1)
-    pad_attn_mask = pad_attn_mask.expand(bsz, len_q, len_k)
+    pad_attn_mask = seq_q.data.eq(PAD).unsqueeze(1)
+    pad_attn_mask = pad_attn_mask.expand(bsz, len_q, len_q)
     return pad_attn_mask
 
 
@@ -43,6 +42,9 @@ class LayerNorm(nn.Module):
 
 
 class GELU(nn.Module):
+    """
+    different from 0.5 * x * (1 + torch.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * torch.pow(x, 3))))
+    """
     def forward(self, x):
         return x * 0.5 * (1.0 + torch.erf(x / math.sqrt(2.0)))
 
@@ -196,7 +198,7 @@ class BERT(nn.Module):
 
         encode = self.dropout(self.lm(encode))
 
-        slf_attn_mask = get_attn_padding_mask(inp, inp)
+        slf_attn_mask = get_attn_padding_mask(inp)
 
         for layer in self.encodes:
             encode = layer(encode, slf_attn_mask)
@@ -257,7 +259,7 @@ if __name__ == "__main__":
     data = torch.load("data/corpus.pt")
     ds = data_loader.BERTDataSet(
         data["word"], data["max_len"], data["dict"], 10000)
-    train_data_loader = DataLoader(ds, batch_size=128, num_workers=5)
+    train_data_loader = DataLoader(ds, batch_size=2, num_workers=5)
     s_criterion = torch.nn.CrossEntropyLoss()
     device_ids = [0, 2]
     b = BERT(ds.word_size, data["max_len"], 6, 128, 512, 4, 0.1)
