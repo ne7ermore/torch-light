@@ -56,13 +56,12 @@ def main(args):
         f"BERT have {sum(x.numel() for x in model.parameters())} paramerters in total")
 
     optimizer = ScheduledOptim(
-        torch.nn.DataParallel(torch.optim.Adam(
+        torch.optim.Adam(
             model.get_trainable_parameters(),
             lr=args.lr,
             betas=(0.9, 0.999),
             eps=1e-09,
             weight_decay=0.01),
-            device_ids=cuda_devices),
         args.d_model,
         args.n_warmup_steps)
 
@@ -82,8 +81,6 @@ def main(args):
         word, sent = model(inp, pos, segment_label)
         w_loss, w_corrects, tgt_sum = w_criterion(word, word_label)
         s_loss = s_criterion(sent, sent_label)
-        if is_multigpu:
-            w_loss, s_loss = w_loss.mean(), s_loss.mean()
         loss = w_loss + s_loss
         loss.backward()
         optimizer.step()

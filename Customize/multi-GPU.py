@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+from torch.nn.parallel.data_parallel import DataParallel
 
 
 class model(nn.Module):
@@ -42,39 +43,35 @@ class DS(Dataset):
         return data, label
 
 
+device = "cuda"
+
 data = torch.load("corpus.pt")
 ds = DS(data['train']['src'],
         data['train']['label'],
-        data["max_len"])
-train_data_loader = DataLoader(ds, batch_size=64, num_workers=6)
-use_cuda = torch.cuda.is_available()
+        1000)
+train_data_loader = DataLoader(ds, batch_size=1000)
 
-device_ids = [0, 1, 2]
+device_ids = [0, 7]
 
-cnn = model(data['dict']['vocab_size'],
-            data['dict']['label_size'],
-            data["max_len"])
-cnn = cnn.cuda(device_ids[0])
+m = model(data['dict']['vocab_size'],
+          data['dict']['label_size'],
+          1000)
+m = m.to(device)
 
-optimizer = torch.optim.Adam(cnn.parameters())
-optimizer = nn.DataParallel(optimizer, device_ids=device_ids)
+optimizer = torch.optim.Adam(m.parameters())
 criterion = torch.nn.CrossEntropyLoss()
-
-
-gpu_num = torch.cuda.device_count()
-cnn = torch.nn.DataParallel(cnn, device_ids=device_ids)
+m = DataParallel(m, device_ids=device_ids)
 
 
 if __name__ == "__main__":
-    cnn.train()
-    for _ in range(10):
+    m.train()
+    for _ in range(100):
         for data, label in train_data_loader:
-            data = data.cuda(device_ids[0])
-            label = label.cuda(device_ids[0])
+            data = data.to(device)
+            label = label.to(device)
             optimizer.zero_grad()
-            target = cnn(data)
+            target = m(data)
 
             loss = criterion(target, label)
-
             loss.backward()
-            optimizer.module.step()
+            optimizer.step()

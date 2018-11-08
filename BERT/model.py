@@ -45,6 +45,7 @@ class GELU(nn.Module):
     """
     different from 0.5 * x * (1 + torch.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * torch.pow(x, 3))))
     """
+
     def forward(self, x):
         return x * 0.5 * (1.0 + torch.erf(x / math.sqrt(2.0)))
 
@@ -237,7 +238,7 @@ class ScheduledOptim(object):
         self.n_current_steps = 0
 
     def step(self):
-        self.optimizer.module.step()
+        self.optimizer.step()
         self.update_learning_rate()
 
     def zero_grad(self):
@@ -248,7 +249,7 @@ class ScheduledOptim(object):
         new_lr = np.power(self.d_model, -0.5) * np.min([np.power(
             self.n_current_steps, -0.5), np.power(self.n_warmup_steps, -1.5) * self.n_current_steps])
 
-        for param_group in self.optimizer.module.param_groups:
+        for param_group in self.optimizer.param_groups:
             param_group['lr'] = new_lr
 
 
