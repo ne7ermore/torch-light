@@ -104,10 +104,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--steps', type=int, default=1000000)
-    parser.add_argument('--batch_size', type=int, default=50)
-    parser.add_argument('--seed', type=int, default=601)
+    parser.add_argument('--batch_size', type=int, default=48)
+    parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--num_cpus', type=int, default=5)
-    parser.add_argument('--cuda_devices', type=str, default='0,6,7')
+    parser.add_argument('--cuda_devices', type=str, default='0,3,5,6,7')
     parser.add_argument('--save', type=str, default='bert.pt')
     parser.add_argument('--data', type=str, default='data/corpus.pt')
     parser.add_argument('--lr', type=float, default=1e-4)

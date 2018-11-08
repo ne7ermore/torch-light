@@ -171,12 +171,15 @@ class BERT(nn.Module):
         self.pos_ebd.weight.requires_grad = False
 
         self.dropout = nn.Dropout(p=dropout)
-        self.lm = LayerNorm(d_model)
+        self.ebd_normal = LayerNorm(d_model)
+        self.out_normal = LayerNorm(d_model)
 
         self.encodes = nn.ModuleList([
             EncoderLayer(d_model, d_ff, n_head, dropout) for _ in range(n_enc)])
 
         self.pooler = Pooler(d_model)
+        self.transform = nn.Linear(d_model, d_model)  # word hidden layer
+        self.gelu = GELU()
 
         self.sent_predict = nn.Linear(d_model, 2)
         self.word_predict = nn.Linear(d_model, vsz)
@@ -190,14 +193,16 @@ class BERT(nn.Module):
         self.sent_predict.weight.data.normal_(INIT_RANGE)
         self.sent_predict.bias.data.zero_()
 
-        self.word_predict.weight.data.normal_(INIT_RANGE)
-        self.word_predict.bias.data.zero_()
+        self.transform.weight.data.normal_(INIT_RANGE)
+        self.transform.bias.data.zero_()
+
+        self.word_predict.weight = self.enc_ebd.weight  # share weights
 
     def forward(self, inp, pos, segment_label):
         encode = self.enc_ebd(
             inp) + self.seg_ebd(segment_label) + self.pos_ebd(pos)
 
-        encode = self.dropout(self.lm(encode))
+        encode = self.dropout(self.ebd_normal(encode))
 
         slf_attn_mask = get_attn_padding_mask(inp)
 
@@ -205,7 +210,9 @@ class BERT(nn.Module):
             encode = layer(encode, slf_attn_mask)
 
         sent = F.log_softmax(self.sent_predict(self.pooler(encode)), dim=-1)
-        word = F.log_softmax(self.word_predict(encode), dim=-1)
+
+        word_enc = self.out_normal(self.gelu(self.transform(encode)))
+        word = F.log_softmax(self.word_predict(word_enc), dim=-1)
 
         return word, sent
 
@@ -263,9 +270,11 @@ if __name__ == "__main__":
     train_data_loader = DataLoader(ds, batch_size=2, num_workers=5)
     s_criterion = torch.nn.CrossEntropyLoss()
     device_ids = [0, 2]
-    b = BERT(ds.word_size, data["max_len"], 6, 128, 512, 4, 0.1)
+    b = BERT(ds.word_size, data["max_len"], 12, 768, 3072, 12, 0.1)
     b = b.cuda(device_ids[0])
-    # b = torch.nn.DataParallel(b, device_ids=device_ids)
+    b = torch.nn.DataParallel(b, device_ids=device_ids)
+    print(
+        f"BERT have {sum(x.numel() for x in b.parameters())} paramerters in total")
     for datas in train_data_loader:
         inp, pos, sent_label, word_label, segment_label = list(
             map(lambda x: x.cuda(device_ids[0]), datas))
