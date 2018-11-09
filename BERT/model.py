@@ -27,6 +27,46 @@ def get_attn_padding_mask(seq_q):
     return pad_attn_mask
 
 
+class WordCrossEntropy(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, props, tgt):
+        tgt_props = props.gather(2, tgt.unsqueeze(2)).squeeze()
+        mask = (tgt > 0).float()
+        tgt_sum = mask.sum()
+        loss = -(tgt_props * mask).sum() / tgt_sum
+
+        props = F.softmax(props, dim=-1)
+        _, index = torch.max(props, -1)
+        corrects = ((index.data == tgt).float() * mask).sum()
+
+        return loss, corrects, tgt_sum
+
+
+class ScheduledOptim(object):
+    def __init__(self, optimizer, d_model, n_warmup_steps):
+        self.optimizer = optimizer
+        self.d_model = d_model
+        self.n_warmup_steps = n_warmup_steps
+        self.n_current_steps = 0
+
+    def step(self):
+        self.optimizer.step()
+        self.update_learning_rate()
+
+    def zero_grad(self):
+        self.optimizer.zero_grad()
+
+    def update_learning_rate(self):
+        self.n_current_steps += 1
+        new_lr = np.power(self.d_model, -0.5) * np.min([np.power(
+            self.n_current_steps, -0.5), np.power(self.n_warmup_steps, -1.5) * self.n_current_steps])
+
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = new_lr
+
+
 class LayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
         super().__init__()
@@ -159,44 +199,35 @@ class Pooler(nn.Module):
 
 
 class BERT(nn.Module):
-    def __init__(self, vsz, max_len, n_enc, d_model, d_ff, n_head, dropout):
+    def __init__(self, args):
         super().__init__()
 
-        n_position = 2 * max_len + 4
+        n_position = 2 * args.max_len + 4
 
-        self.enc_ebd = nn.Embedding(vsz, d_model, padding_idx=PAD)
-        self.seg_ebd = nn.Embedding(3, d_model, padding_idx=PAD)
-        self.pos_ebd = nn.Embedding(n_position, d_model, padding_idx=PAD)
-        self.pos_ebd.weight.data = position(n_position, d_model)
+        self.enc_ebd = nn.Embedding(args.vsz, args.d_model, padding_idx=PAD)
+        self.seg_ebd = nn.Embedding(3, args.d_model, padding_idx=PAD)
+        self.pos_ebd = nn.Embedding(n_position, args.d_model, padding_idx=PAD)
+        self.pos_ebd.weight.data = position(n_position, args.d_model)
         self.pos_ebd.weight.requires_grad = False
 
-        self.dropout = nn.Dropout(p=dropout)
-        self.ebd_normal = LayerNorm(d_model)
-        self.out_normal = LayerNorm(d_model)
+        self.dropout = nn.Dropout(p=args.dropout)
+        self.ebd_normal = LayerNorm(args.d_model)
+        self.out_normal = LayerNorm(args.d_model)
 
-        self.encodes = nn.ModuleList([
-            EncoderLayer(d_model, d_ff, n_head, dropout) for _ in range(n_enc)])
+        self.encodes = nn.ModuleList([EncoderLayer(
+            args.d_model, args.d_ff, args.n_head, args.dropout) for _ in range(args.n_stack_layers)])
 
-        self.pooler = Pooler(d_model)
-        self.transform = nn.Linear(d_model, d_model)  # word hidden layer
+        self.pooler = Pooler(args.d_model)
+        self.transform = nn.Linear(
+            args.d_model, args.d_model)  # word hidden layer
         self.gelu = GELU()
-
-        self.sent_predict = nn.Linear(d_model, 2)
-        self.word_predict = nn.Linear(d_model, vsz)
-
-        self.reset_parameters()
 
     def reset_parameters(self):
         self.enc_ebd.weight.data.normal_(INIT_RANGE)
         self.seg_ebd.weight.data.normal_(INIT_RANGE)
 
-        self.sent_predict.weight.data.normal_(INIT_RANGE)
-        self.sent_predict.bias.data.zero_()
-
         self.transform.weight.data.normal_(INIT_RANGE)
         self.transform.bias.data.zero_()
-
-        self.word_predict.weight = self.enc_ebd.weight  # share weights
 
     def forward(self, inp, pos, segment_label):
         encode = self.enc_ebd(
@@ -209,79 +240,25 @@ class BERT(nn.Module):
         for layer in self.encodes:
             encode = layer(encode, slf_attn_mask)
 
-        sent = F.log_softmax(self.sent_predict(self.pooler(encode)), dim=-1)
+        sent_encode = self.pooler(encode)
+        word_encode = self.out_normal(self.gelu(self.transform(encode)))
 
-        word_enc = self.out_normal(self.gelu(self.transform(encode)))
-        word = F.log_softmax(self.word_predict(word_enc), dim=-1)
-
-        return word, sent
+        return word_encode, sent_encode
 
     def get_trainable_parameters(self):
         return filter(lambda m: m.requires_grad, self.parameters())
 
+    def parameters_count(self):
+        return sum(x.numel() for x in self.parameters())
 
-class WordCrossEntropy(nn.Module):
-    def __init__(self):
-        super().__init__()
+    def save_model(self, args, data, path="model.pt"):
+        torch.save({
+            "args": args,
+            "weights": self.state_dict(),
+            "dict": data["dict"],
+            "max_len": data["max_len"]
+        }, path)
 
-    def forward(self, props, tgt):
-        tgt_props = props.gather(2, tgt.unsqueeze(2)).squeeze()
-        mask = (tgt > 0).float()
-        tgt_sum = mask.sum()
-        loss = -(tgt_props * mask).sum() / tgt_sum
-
-        props = F.softmax(props, dim=-1)
-        _, index = torch.max(props, -1)
-        corrects = ((index.data == tgt).float() * mask).sum()
-
-        return loss, corrects, tgt_sum
-
-
-class ScheduledOptim(object):
-    def __init__(self, optimizer, d_model, n_warmup_steps):
-        self.optimizer = optimizer
-        self.d_model = d_model
-        self.n_warmup_steps = n_warmup_steps
-        self.n_current_steps = 0
-
-    def step(self):
-        self.optimizer.step()
-        self.update_learning_rate()
-
-    def zero_grad(self):
-        self.optimizer.zero_grad()
-
-    def update_learning_rate(self):
-        self.n_current_steps += 1
-        new_lr = np.power(self.d_model, -0.5) * np.min([np.power(
-            self.n_current_steps, -0.5), np.power(self.n_warmup_steps, -1.5) * self.n_current_steps])
-
-        for param_group in self.optimizer.param_groups:
-            param_group['lr'] = new_lr
-
-
-if __name__ == "__main__":
-    import data_loader
-    from torch.utils.data import DataLoader
-
-    data = torch.load("data/corpus.pt")
-    ds = data_loader.BERTDataSet(
-        data["word"], data["max_len"], data["dict"], 10000)
-    train_data_loader = DataLoader(ds, batch_size=2, num_workers=5)
-    s_criterion = torch.nn.CrossEntropyLoss()
-    device_ids = [0, 2]
-    b = BERT(ds.word_size, data["max_len"], 12, 768, 3072, 12, 0.1)
-    b = b.cuda(device_ids[0])
-    b = torch.nn.DataParallel(b, device_ids=device_ids)
-    print(
-        f"BERT have {sum(x.numel() for x in b.parameters())} paramerters in total")
-    for datas in train_data_loader:
-        inp, pos, sent_label, word_label, segment_label = list(
-            map(lambda x: x.cuda(device_ids[0]), datas))
-
-        word, sent = b(inp, pos, segment_label)
-        print(word.shape)
-        print(sent.shape)
-        print(sent_label.shape)
-
-        s_criterion(sent, sent_label.view(-1))
+    def load_model(self, weights):
+        self.load_state_dict(weights)
+        self.cuda()

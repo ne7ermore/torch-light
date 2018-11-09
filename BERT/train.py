@@ -4,7 +4,8 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 
-from model import BERT, WordCrossEntropy, ScheduledOptim
+from model import WordCrossEntropy, ScheduledOptim
+from pretrain import Pretraining
 from data_loader import BERTDataSet
 
 
@@ -44,16 +45,12 @@ def main(args):
                                batch_size=args.batch_size,
                                num_workers=args.num_cpus)
 
-    model = BERT(dataset.word_size,
-                 data["max_len"],
-                 args.n_stack_layers,
-                 args.d_model,
-                 args.d_ff,
-                 args.n_head,
-                 args.dropout)
+    args.max_len = data["max_len"]
+    args.vsz = dataset.word_size
+    model = Pretraining(2, args)
 
     print(
-        f"BERT have {sum(x.numel() for x in model.parameters())} paramerters in total")
+        f"BERT have {model.bert.parameters_count()} paramerters in total")
 
     optimizer = ScheduledOptim(
         torch.optim.Adam(
@@ -71,14 +68,15 @@ def main(args):
     s_criterion = torch.nn.CrossEntropyLoss()
 
     model = model.to(device)
-    model = torch.nn.DataParallel(model, device_ids=cuda_devices)
     model.train()
+    paral_model = torch.nn.DataParallel(model, device_ids=cuda_devices)
+
     for step, datas in enumerate(training_data):
         inp, pos, sent_label, word_label, segment_label = list(
             map(lambda x: x.to(device), datas))
         sent_label = sent_label.view(-1)
         optimizer.zero_grad()
-        word, sent = model(inp, pos, segment_label)
+        word, sent = paral_model(inp, pos, segment_label)
         w_loss, w_corrects, tgt_sum = w_criterion(word, word_label)
         s_loss = s_criterion(sent, sent_label)
         loss = w_loss + s_loss
