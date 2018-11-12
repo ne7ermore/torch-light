@@ -25,8 +25,11 @@ class Pretraining(nn.Module):
 
         self.word_predict.weight = self.bert.enc_ebd.weight  # share weights
 
-    def get_trainable_parameters(self):
-        return self.bert.get_trainable_parameters()
+    def get_optimizer_parameters(self, decay):
+        return [{'params': [p for n, p in self.named_parameters(
+        ) if n.split(".")[-1] not in NOT_USE_WEIGHT_DECAY and p.requires_grad], 'weight_decay': decay},
+            {'params': [p for n, p in self.named_parameters(
+            ) if n.split(".")[-1] in NOT_USE_WEIGHT_DECAY and p.requires_grad], 'weight_decay': 0.0}]
 
     def forward(self, inp, pos, segment_label):
         word_encode, sent_encode = self.bert(inp, pos, segment_label)

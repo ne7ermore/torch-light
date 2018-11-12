@@ -44,29 +44,6 @@ class WordCrossEntropy(nn.Module):
         return loss, corrects, tgt_sum
 
 
-class ScheduledOptim(object):
-    def __init__(self, optimizer, d_model, n_warmup_steps):
-        self.optimizer = optimizer
-        self.d_model = d_model
-        self.n_warmup_steps = n_warmup_steps
-        self.n_current_steps = 0
-
-    def step(self):
-        self.optimizer.step()
-        self.update_learning_rate()
-
-    def zero_grad(self):
-        self.optimizer.zero_grad()
-
-    def update_learning_rate(self):
-        self.n_current_steps += 1
-        new_lr = np.power(self.d_model, -0.5) * np.min([np.power(
-            self.n_current_steps, -0.5), np.power(self.n_warmup_steps, -1.5) * self.n_current_steps])
-
-        for param_group in self.optimizer.param_groups:
-            param_group['lr'] = new_lr
-
-
 class LayerNorm(nn.Module):
     def __init__(self, hidden_size, eps=1e-6):
         super().__init__()
@@ -246,7 +223,7 @@ class BERT(nn.Module):
         return word_encode, sent_encode
 
     def get_trainable_parameters(self):
-        return filter(lambda m: m.requires_grad, self.parameters())
+        return filter(lambda p: p.requires_grad, self.parameters())
 
     def parameters_count(self):
         return sum(x.numel() for x in self.parameters())

@@ -4,7 +4,8 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 
-from model import WordCrossEntropy, ScheduledOptim
+from model import WordCrossEntropy
+from optimization import AdamWeightDecayOptimizer
 from pretrain import Pretraining
 from data_loader import BERTDataSet
 
@@ -52,15 +53,14 @@ def main(args):
     print(
         f"BERT have {model.bert.parameters_count()} paramerters in total")
 
-    optimizer = ScheduledOptim(
-        torch.optim.Adam(
-            model.get_trainable_parameters(),
-            lr=args.lr,
-            betas=(0.9, 0.999),
-            eps=1e-09,
-            weight_decay=0.01),
-        args.d_model,
-        args.n_warmup_steps)
+    optimizer = AdamWeightDecayOptimizer(
+        model.get_optimizer_parameters(args.weight_decay),
+        lr=args.lr,
+        warmup=args.n_warmup_steps,
+        train_steps=args.steps,
+        weight_decay=args.weight_decay,
+        clip=args.clip
+    )
 
     w_criterion = WordCrossEntropy()
     w_criterion = w_criterion.to(device)
@@ -101,21 +101,22 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--steps', type=int, default=1000000)
-    parser.add_argument('--batch_size', type=int, default=48)
+    parser.add_argument('--steps', type=int, default=100000)
+    parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--num_cpus', type=int, default=5)
-    parser.add_argument('--cuda_devices', type=str, default='0,3,5,6,7')
+    parser.add_argument('--cuda_devices', type=str, default='0,3,5,7')
     parser.add_argument('--save', type=str, default='bert.pt')
     parser.add_argument('--data', type=str, default='data/corpus.pt')
-    parser.add_argument('--lr', type=float, default=1e-4)
+    parser.add_argument('--lr', type=float, default=5e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--d_model', type=int, default=768)
     parser.add_argument('--d_ff', type=int, default=3072)
     parser.add_argument('--n_head', type=int, default=12)
     parser.add_argument('--n_stack_layers', type=int, default=12)
     parser.add_argument('--n_warmup_steps', type=int, default=10000)
-    parser.add_argument('--initializer_range', type=float, default=0.02)
+    parser.add_argument('--clip', type=float, default=1.0)
+    parser.add_argument('--weight_decay', type=float, default=.01)
 
     args = parser.parse_args()
 
