@@ -7,14 +7,14 @@ Perform experiments on the English data from [Corpus](https://drive.google.com/u
 ## Tutorial
 Get [Tutorial](https://ne7ermore.github.io/post/bert) if know Chinese
 
-Downloaded Gutenberg.zip to ${PROJECT}/data
+Downloaded Gutenberg.zip to ${PROJECT}/data or CNN data
 
 ## train
 
 Step.1 - prepare corpus
 
 ```python
-python3 fuel.py
+python3 fuel.py or fuel_cnn.py
 python3 corpus.py
 ```
 

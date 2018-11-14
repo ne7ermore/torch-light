@@ -179,7 +179,7 @@ class BERT(nn.Module):
     def __init__(self, args):
         super().__init__()
 
-        n_position = 2 * args.max_len + 4
+        n_position = args.max_len + 1
 
         self.enc_ebd = nn.Embedding(args.vsz, args.d_model, padding_idx=PAD)
         self.seg_ebd = nn.Embedding(3, args.d_model, padding_idx=PAD)

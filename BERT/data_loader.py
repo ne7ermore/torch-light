@@ -7,6 +7,17 @@ from torch.utils.data import Dataset
 from const import *
 
 
+def truncate_seq_pair(tokens_a, tokens_b, max_length):
+    while True:
+        total_length = len(tokens_a) + len(tokens_b)
+        if total_length <= max_length:
+            break
+        if len(tokens_a) > len(tokens_b):
+            tokens_a.pop()
+        else:
+            tokens_b.pop()
+
+
 class BERTDataSet(Dataset):
     def __init__(self, sents, max_len, word_dict, steps):
         self.sents_size = len(sents)
@@ -39,13 +50,11 @@ class BERTDataSet(Dataset):
         if random.random() > RANDOM_SENT:
             return sent[0], sent[1], NEXT
         else:
-            idx = self.random_sample()
             return sent[0], self.random_sample()[1], NOT_NEXT
 
     def gather_word(self, sent):
         label = []
         for idx, word in enumerate(sent):
-
             if random.random() < RANDOM_WORD_SAMPLE:
                 if random.random() < RANDOM_MARK:
                     sent[idx] = MASK
@@ -59,10 +68,12 @@ class BERTDataSet(Dataset):
         return sent, label
 
     def pad_sent(self, sent):
-        return sent + (self.max_len * 2 + 3 - len(sent)) * [PAD]
+        return sent + (self.max_len - len(sent)) * [PAD]
 
     def gen_one(self):
         t1, t2, label = self.gather_sent()
+        truncate_seq_pair(t1, t2, self.max_len - 3)
+
         t1, t1_label = self.gather_word(t1)
         t2, t2_label = self.gather_word(t2)
 
@@ -84,15 +95,15 @@ if __name__ == "__main__":
     from torch.utils.data import DataLoader
 
     data = torch.load("data/corpus.pt")
-    ds = BERTDataSet(data["word"], data["max_len"], data["dict"], 100)
-    train_data_loader = DataLoader(ds, batch_size=50, num_workers=5)
+    ds = BERTDataSet(data["word"], data["max_len"], data["dict"], 10000)
+    train_data_loader = DataLoader(ds, batch_size=1, num_workers=1)
     for inp, pos, sent_label, word_label, segment_label in train_data_loader:
-        # print("=" * 90)
-        # print(inp.shape)
-        # print(pos.shape)
-        # print(sent_label.shape)
-        # print(word_label.shape)
-        # print(segment_label.shape)
-        # print("=" * 90)
+        print("=" * 90)
+        print(inp.shape)
+        print(pos.shape)
+        print(sent_label.shape)
+        print(word_label.shape)
+        print(segment_label.shape)
+        print("=" * 90)
         print(word_label.shape)
         print((word_label > 0).float().sum())

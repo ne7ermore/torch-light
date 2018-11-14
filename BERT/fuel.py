@@ -1,6 +1,8 @@
 import re
 import zipfile
 
+from const import SPLIT_CODE
+
 
 def normalizeString(s):
     s = s.lower().strip()
@@ -15,13 +17,13 @@ def parse_sent(wfile, sent, min_len=5):
         word = normalizeString(word.decode("utf-8"))
         temp += [word]
         if re.search(r"[.!?]", word) is not None:
-            if len(temp) > min_len:
-                sents.append(" ".join(temp))
+            sents.append(" ".join(temp))
             temp = []
 
     if len(sents) > 1:
         for index in range(len(sents) - 1):
-            wfile.write("\t".join([sents[index], sents[index + 1]]) + "\r\n")
+            wfile.write(SPLIT_CODE.join(
+                [sents[index], sents[index + 1]]) + "\r\n")
 
 
 def fuel(inf, stop_tag=b"\r\n", min_len=20):

@@ -54,7 +54,7 @@ class Dictionary(object):
 class Corpus(object):
     def __init__(self, save_data="data/corpus.pt", max_len=128):
 
-        self.train = "data/fuel"
+        self.train = "data/fuel.cnn"
         self.save_data = save_data
         self.word = Dictionary()
         self.max_len = max_len
@@ -62,16 +62,10 @@ class Corpus(object):
     def parse_data(self, _file):
         sents = []
         for sentence in open(_file):
-            t1, t2 = sentence.strip().split('\t')
+            t1, t2 = sentence.strip().split(SPLIT_CODE)
 
             words1 = t1.strip().split()
             words2 = t2.strip().split()
-
-            if len(words1) > self.max_len:
-                words1 = words1[:self.max_len]
-
-            if len(words2) > self.max_len:
-                words2 = words2[:self.max_len]
 
             sents.append([words1, words2])
 

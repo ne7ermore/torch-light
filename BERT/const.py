@@ -28,3 +28,4 @@ SEGMENTB = 2
 INIT_RANGE = 0.02
 
 NOT_USE_WEIGHT_DECAY = ['bias', 'gamma', 'beta']
+SPLIT_CODE = "@@@###@@@"

@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--steps', type=int, default=100000)
-    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--num_cpus', type=int, default=5)
     parser.add_argument('--cuda_devices', type=str, default='0,3,5,7')
