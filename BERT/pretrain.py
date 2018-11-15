@@ -24,6 +24,7 @@ class Pretraining(nn.Module):
         self.sent_predict.bias.data.zero_()
 
         self.word_predict.weight = self.bert.enc_ebd.weight  # share weights
+        self.word_predict.bias.data.zero_()
 
     def get_optimizer_parameters(self, decay):
         return [{'params': [p for n, p in self.named_parameters(

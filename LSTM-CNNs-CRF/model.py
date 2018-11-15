@@ -10,7 +10,7 @@ from const import *
 def log_sum_exp(input, keepdim=False):
     assert input.dim() == 2
     max_scores, _ = input.max(dim=-1, keepdim=True)
-    output = input - max_scores.expand_as(input)
+    output = input - max_scores
     return max_scores + torch.log(torch.sum(torch.exp(output), dim=-1, keepdim=keepdim))
 
 
@@ -65,15 +65,13 @@ class CRF(nn.Module):
         for words in input_t:
             alphas_t = []
             for next_tag in range(self.label_size):
-                emit_score = words[:, next_tag].contiguous()
-                emit_score = emit_score.unsqueeze(1).expand_as(words)
-
-                trans_score = self.transitions[next_tag, :].view(
-                    1, -1).expand_as(words)
+                emit_score = words[:, next_tag].view(-1, 1)
+                trans_score = self.transitions[next_tag].view(1, -1)
                 next_tag_var = forward_var + trans_score + emit_score
                 alphas_t.append(log_sum_exp(next_tag_var, True))
             forward_var = torch.cat(alphas_t, dim=-1)
-
+        forward_var = forward_var + self.transitions[STOP].view(
+            1, -1)
         return log_sum_exp(forward_var)
 
     def viterbi_decode(self, input):
@@ -102,8 +100,7 @@ class CRF(nn.Module):
             forward_var = torch.cat(viterbivars_t, -1) + words
             backpointers.append(torch.cat(bptrs_t, dim=-1))
 
-        terminal_var = forward_var + \
-            self.transitions[STOP].view(1, -1).expand(bsz, l_size)
+        terminal_var = forward_var + self.transitions[STOP].view(1, -1)
         _, best_tag_ids = torch.max(terminal_var, 1)
 
         best_path = [best_tag_ids.view(-1, 1)]

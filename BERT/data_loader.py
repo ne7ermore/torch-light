@@ -107,3 +107,13 @@ if __name__ == "__main__":
         print("=" * 90)
         print(word_label.shape)
         print((word_label > 0).float().sum())
+
+    itow = {v: k for k, v in data["dict"].items()}
+
+    for _ in range(10):
+        one, label, word_label, segment_label = ds.gen_one()
+        print(label)
+        print(" ".join([itow[w] for w in one]))
+        print(" ".join([itow[w] for w in word_label]))
+        print(segment_label)
+        print("=" * 30)

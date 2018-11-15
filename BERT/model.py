@@ -37,7 +37,6 @@ class WordCrossEntropy(nn.Module):
         tgt_sum = mask.sum()
         loss = -(tgt_props * mask).sum() / tgt_sum
 
-        props = F.softmax(props, dim=-1)
         _, index = torch.max(props, -1)
         corrects = ((index.data == tgt).float() * mask).sum()
 
@@ -181,9 +180,9 @@ class BERT(nn.Module):
 
         n_position = args.max_len + 1
 
-        self.enc_ebd = nn.Embedding(args.vsz, args.d_model, padding_idx=PAD)
-        self.seg_ebd = nn.Embedding(3, args.d_model, padding_idx=PAD)
-        self.pos_ebd = nn.Embedding(n_position, args.d_model, padding_idx=PAD)
+        self.enc_ebd = nn.Embedding(args.vsz, args.d_model)
+        self.seg_ebd = nn.Embedding(3, args.d_model)
+        self.pos_ebd = nn.Embedding(n_position, args.d_model)
         self.pos_ebd.weight.data = position(n_position, args.d_model)
         self.pos_ebd.weight.requires_grad = False
 

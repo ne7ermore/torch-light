@@ -6,6 +6,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 from torch.nn import init
 
+
 class BiLSTM_CRF_Size(nn.Module):
     def __init__(self, args):
         super(BiLSTM_CRF_Size, self).__init__()
@@ -21,7 +22,7 @@ class BiLSTM_CRF_Size(nn.Module):
                                dropout=self.dropout,
                                bidirectional=True)
 
-        self.logistic = nn.Linear(2*self.lstm_hsz, self.tag_size)
+        self.logistic = nn.Linear(2 * self.lstm_hsz, self.tag_size)
         self._init_weights(scope=self.w_init)
 
     def forward(self, sentences):
