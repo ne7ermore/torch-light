@@ -22,3 +22,23 @@ Step.2 - Train data
 ```python
 python3 train
 ```
+
+<p align="center">
+<img src="res/wp.png" width="900">
+</p>
+
+<p align="center">
+<img src="res/sp.png" width="900">
+</p>
+
+<p align="center">
+<img src="res/loss.png" width="900">
+</p>
+
+<p align="center">
+<img src="res/sloss.png" width="900">
+</p>
+
+<p align="center">
+<img src="res/sloss.png" width="900">
+</p>
