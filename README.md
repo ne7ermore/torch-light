@@ -44,6 +44,7 @@ Get tutorial series in [Zhuanlan](https://zhuanlan.zhihu.com/c_135985394) if kno
 * [BERT](https://github.com/ne7ermore/torch-light/tree/master/BERT)
 
 #### 4. Vision
+* [yolo-v3](https://github.com/ne7ermore/torch-light/tree/master/yolo-v3)
 * [DenseNet](https://github.com/ne7ermore/torch-light/tree/master/DenseNet)
 * [Neural Style](https://github.com/ne7ermore/torch-light/tree/master/neural-artistic-style)
 * [DC Gan](https://github.com/ne7ermore/torch-light/tree/master/dc-gan)
