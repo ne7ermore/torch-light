@@ -3,7 +3,7 @@ Generation for Chinese Poetry.
 Module implemention from "[Generating Sentences from a Continuous Space](https://arxiv.org/abs/1511.06349#)". <br>
 
 ## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/31629002) if know Chinese
+Get [Tutorial](https://ne7ermore.github.io/post/vae) if know Chinese
 
 ## Requirement
 * python 3.6

@@ -2,7 +2,7 @@
 [paper](https://arxiv.org/abs/1801.06345)
 
 ## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/37308381) if know Chinese
+Get [Tutorial](https://ne7ermore.github.io/post/facial-bp/) if know Chinese
 
 ## Dataset
 [repo](https://github.com/HCIILAB/SCUT-FBP5500-Database-Release)

@@ -2,9 +2,6 @@
 This is the implementation for LSTM Text Classfication. <br>
 Perform experiments on the English data from [TREC](http://cogcomp.org/Data/QA/QC/)
 
-## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/30546071) if know Chinese
-
 ## Requirement
 * python 3.5
 * pytorch 0.2.0

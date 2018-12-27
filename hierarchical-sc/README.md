@@ -2,7 +2,7 @@
 Module implemention from [paper](https://arxiv.org/pdf/1805.01089.pdf)
 
 ## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/38615385) if know Chinese
+Get [Tutorial](https://ne7ermore.github.io/post/hierarchical-sc/) if know Chinese
 
 ## Datasets - Amazon SNAP Review Dataset (SNAP)
 We select three domains of product reviews to construct three benchmark datasets, which are Toys & Games, Sports & Outdoors, and Movie & TV.

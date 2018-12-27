@@ -2,9 +2,6 @@
 Module implemention from "[CEnd-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF](https://arxiv.org/abs/1603.01354)". <br>
 Perform experiments on the English data from [CoNLL 2003](https://www.clips.uantwerpen.be/conll2003/ner/)
 
-## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/30791481) if know Chinese
-
 ## Requirement
 * python 3.5
 * pytorch 0.4.0

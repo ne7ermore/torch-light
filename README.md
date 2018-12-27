@@ -11,7 +11,7 @@ It is better finish [Official Pytorch Tutorial](http://pytorch.org/tutorials/ind
 ##### Continue updating...
 
 ## Tutorial
-Get tutorial series in [Zhuanlan](https://zhuanlan.zhihu.com/c_135985394) if know Chinese
+Get tutorial series in [Blog](https://ne7ermore.github.io/) if know Chinese
 
 ## Tabel of Pytorch Examples
 

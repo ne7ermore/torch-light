@@ -2,9 +2,6 @@
 Image captioning with reinforcement learning.<br>
 Module implemention from "[Actor-Critic Sequence Training for Image Captioning](https://arxiv.org/abs/1706.09601)". <br>
 
-## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/34224194) if know Chinese
-
 ## Requirement
 * python 3.5
 * pytorch 0.3.1

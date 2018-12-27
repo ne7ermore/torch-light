@@ -2,7 +2,7 @@
 Module implemention from [paper](https://arxiv.org/pdf/1612.01627.pdf)
 
 ## Tutorial
-Get [Tutorial](https://zhuanlan.zhihu.com/p/37877669) if know Chinese
+Get [Tutorial](https://ne7ermore.github.io/post/retrieval-based-chatbots/) if know Chinese
 
 ## Model
 <p align="center">
