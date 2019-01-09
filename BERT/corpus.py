@@ -47,9 +47,6 @@ class Dictionary(object):
     def __len__(self):
         return self.idx
 
-    def __str__(self):
-        return "%s(size = %d)".format(self.__class__.__name__, len(self.idx))
-
 
 class Corpus(object):
     def __init__(self, save_data="data/corpus.pt", max_len=128):

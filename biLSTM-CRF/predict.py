@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -11,6 +8,7 @@ import re
 from const import *
 from model import BiLSTM_CRF_Size
 
+
 class Predict(object):
     def __init__(self, model_source, cuda=False):
         self.torch = torch.cuda if cuda else torch
@@ -18,7 +16,8 @@ class Predict(object):
         if self.cuda:
             model_source = torch.load(model_source)
         else:
-            model_source = torch.load(model_source, map_location=lambda storage, loc: storage)
+            model_source = torch.load(
+                model_source, map_location=lambda storage, loc: storage)
 
         self.src_dict = model_source["src_dict"]
         self.trains_score = model_source["trains_score"]
@@ -45,10 +44,10 @@ class Predict(object):
 
     def viterbi(self, nodes):
         paths = {
-                    WORD[O]: nodes[0][WORD[O]],
-                    WORD[BH]: nodes[0][WORD[BH]],
-                    WORD[BW]: nodes[0][WORD[BW]]
-                }
+            WORD[O]: nodes[0][WORD[O]],
+            WORD[BH]: nodes[0][WORD[BH]],
+            WORD[BW]: nodes[0][WORD[BW]]
+        }
 
         for w_step in range(1, len(nodes)):
             _path = paths.copy()
@@ -58,28 +57,31 @@ class Predict(object):
             for code, score in nodes[w_step].items():
                 for last_code, last_score in _path.items():
                     if last_code[-1] + code in self.trains_score:
-                        self.sub_paths[last_code+code] = last_score*score*self.trains_score[last_code[-1] + code]
+                        self.sub_paths[last_code+code] = last_score * \
+                            score*self.trains_score[last_code[-1] + code]
 
             sorted_sub_path = sorted(self.sub_paths.items(),
-                                key=lambda path: path[1],
-                                reverse=True)
+                                     key=lambda path: path[1],
+                                     reverse=True)
 
             best_path, best_score = sorted_sub_path[0]
             paths[best_path] = best_score
 
         sorted_path = sorted(paths.items(),
-                            key=lambda path: path[1],
-                            reverse=True)
+                             key=lambda path: path[1],
+                             reverse=True)
         best_path, _ = sorted_path[0]
         return best_path
 
     def get_size(self, text):
         res = {}
-        if text == "": return res
+        if text == "":
+            return res
 
         tensor = self.text2tensor(text)
         pre = self.model.prob_projection(self.model(tensor))
-        nodes = [dict(zip([WORD[O], WORD[BH], WORD[IH], WORD[BW], WORD[IW]], each[1:])) for each in pre.data]
+        nodes = [dict(zip([WORD[O], WORD[BH], WORD[IH], WORD[BW],
+                           WORD[IW]], each[1:])) for each in pre.data]
 
         tags = self.viterbi(nodes)
 
