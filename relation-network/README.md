@@ -1,5 +1,7 @@
 ## A simple neural network module for relational reasoning
-Module implemention from "[A simple neural network module for relational reasoning](https://arxiv.org/abs/1706.01427)"
+Module implemention from "[A simple neural network module for relational reasoning](https://arxiv.org/abs/1706.01427)" 
+
+In this paper we describe how to use Relation Networks (RNs) as a simple plug-and-play module to solve problems that fundamentally hinge on relational reasoning.
 
 ---
 
