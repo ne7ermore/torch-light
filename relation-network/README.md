@@ -3,7 +3,9 @@ Module implemention from "[A simple neural network module for relational reasoni
 
 In this paper we describe how to use Relation Networks (RNs) as a simple plug-and-play module to solve problems that fundamentally hinge on relational reasoning.
 
----
+## Tutorial
+Get [Tutorial](https://ne7ermore.github.io/post/relation-net/) if know Chinese
+
 
 ## Requirement
 * python 3.7
