@@ -4,7 +4,7 @@ Module implemention from "[Actor-Critic Sequence Training for Image Captioning](
 
 ## Requirement
 * python 3.5
-* pytorch 0.3.1
+* pytorch 0.3.0
 * numpy 1.13.1
 * PIL
 
