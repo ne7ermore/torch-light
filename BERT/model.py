@@ -142,10 +142,10 @@ class MultiHeadAtt(nn.Module):
         return self.lm(outputs + residual)
 
     def reset_parameters(self):
-        self.w_qs.data.normal_(INIT_RANGE)
-        self.w_ks.data.normal_(INIT_RANGE)
-        self.w_vs.data.normal_(INIT_RANGE)
-        self.w_o.weight.data.normal_(INIT_RANGE)
+        self.w_qs.data.normal_(std=INIT_RANGE)
+        self.w_ks.data.normal_(std=INIT_RANGE)
+        self.w_vs.data.normal_(std=INIT_RANGE)
+        self.w_o.weight.data.normal_(std=INIT_RANGE)
 
 
 class EncoderLayer(nn.Module):
@@ -166,7 +166,7 @@ class Pooler(nn.Module):
         super().__init__()
 
         self.linear = nn.Linear(d_model, d_model)
-        self.linear.weight.data.normal_(INIT_RANGE)
+        self.linear.weight.data.normal_(std=INIT_RANGE)
         self.linear.bias.data.zero_()
 
     def forward(self, x):
@@ -199,10 +199,10 @@ class BERT(nn.Module):
         self.gelu = GELU()
 
     def reset_parameters(self):
-        self.enc_ebd.weight.data.normal_(INIT_RANGE)
-        self.seg_ebd.weight.data.normal_(INIT_RANGE)
+        self.enc_ebd.weight.data.normal_(std=INIT_RANGE)
+        self.seg_ebd.weight.data.normal_(std=INIT_RANGE)
 
-        self.transform.weight.data.normal_(INIT_RANGE)
+        self.transform.weight.data.normal_(std=INIT_RANGE)
         self.transform.bias.data.zero_()
 
     def forward(self, inp, pos, segment_label):
