@@ -140,7 +140,7 @@ def train(i):
 def test(i, predict):
     model.eval()
     t = pre = groud = 0
-    inf = open(os.path.join(const.DATAPATH, "dev_data.json"), encoding="utf8")
+    inf = open("data/dev_data.json", encoding="utf8")
     for line in inf:
         line = json.loads(line)
         text = line["text"]
