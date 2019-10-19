@@ -14,5 +14,6 @@ alpha-zero/alpha_go_zero_cheat_sheet.png
 */.DS_Store
 .DS_Store
 .vscode
-dgcnn/data
+information-extraction/data
+coreference/data
 __pycache__

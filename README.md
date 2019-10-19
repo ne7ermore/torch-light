@@ -43,6 +43,7 @@ Get tutorial series in [Blog](https://ne7ermore.github.io/) if know Chinese
 * [Deep SRL](https://github.com/ne7ermore/torch-light/tree/master/deep-srl)
 * [BERT](https://github.com/ne7ermore/torch-light/tree/master/BERT)
 * [Relation Network](https://github.com/ne7ermore/torch-light/tree/master/relation-network)
+* [Information Extraction](https://github.com/ne7ermore/torch-light/tree/master/information-extraction)
 
 #### 4. Vision
 * [yolo-v3](https://github.com/ne7ermore/torch-light/tree/master/yolo-v3)
