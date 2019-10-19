@@ -17,8 +17,7 @@ python3 predict.py
 
 ```
 
-
-## train
+### train
 
 Step.1 - prepare corpus
 
