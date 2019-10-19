@@ -25,5 +25,5 @@ python3 corpus.py
 
 Step.2 - Train data
 ```python
-python3 train
+python3 train.py
 ```

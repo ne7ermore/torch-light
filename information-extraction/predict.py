@@ -119,21 +119,5 @@ if __name__ == "__main__":
     import json
     import const
     predict = Predict(model_source="./weights/model_2.pt")
-    # triples = predict.predict("发展简史1992年，百万庄园推出肥牛海鲜火锅")
-    # print(triples)
-
-    inf = open(os.path.join(const.DATAPATH, "dev_data.json"), encoding="utf8")
-    for line in inf:
-        line = json.loads(line)
-        text = line["text"]
-        g_triples = set()
-        for trip in line["spo_list"]:
-            g_triples.add((trip["subject"], trip["predicate"], trip["object"]))
-
-        p_triples = set(predict.predict(text))
-
-        if len(p_triples) != len(p_triples.intersection(g_triples)):
-            print(text)
-            print(p_triples)
-            print(g_triples)
-            print("-"*90)
+    triples = predict.predict("《李白》是李荣浩作词作曲并演唱的歌曲，该曲收录于2013年9月17号发行的原创专辑《模特》中")
+    print(triples)
