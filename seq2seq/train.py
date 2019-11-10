@@ -1,3 +1,11 @@
+from tqdm import tqdm
+import time
+import const
+from optim import ScheduledOptim
+from model import Transformer
+from data_loader import DataLoader
+from torch.autograd import Variable
+import torch
 import argparse
 
 parser = argparse.ArgumentParser(description='seq2seq')
@@ -30,8 +38,6 @@ parser.add_argument('--n-warmup-steps', type=int, default=0)
 args = parser.parse_args()
 args.share_linear = not args.not_share_linear
 
-import torch
-from torch.autograd import Variable
 
 torch.manual_seed(args.seed)
 use_cuda = torch.cuda.is_available() and args.cuda_able
@@ -41,25 +47,24 @@ if use_cuda:
 # ##############################################################################
 # Load data
 # ##############################################################################
-from data_loader import DataLoader
 
 data = torch.load(args.data)
 args.max_word_len = data["max_word_len"]
 
 training_data = DataLoader(
-             data['train']['src'],
-             data['train']['tgt'],
-             batch_size=args.batch_size,
-             shuffle=False,
-             cuda=use_cuda)
+    data['train']['src'],
+    data['train']['tgt'],
+    batch_size=args.batch_size,
+    shuffle=False,
+    cuda=use_cuda)
 
 validation_data = DataLoader(
-              data['valid']['src'],
-              data['valid']['tgt'],
-              batch_size=args.batch_size,
-              shuffle=False,
-              evaluation=True,
-              cuda=use_cuda)
+    data['valid']['src'],
+    data['valid']['tgt'],
+    batch_size=args.batch_size,
+    shuffle=False,
+    evaluation=True,
+    cuda=use_cuda)
 
 args.enc_vocab_size = data['dict']['src_size']
 args.dec_vocab_size = data['dict']['tgt_size']
@@ -69,38 +74,35 @@ args.n_warmup_steps = args.n_warmup_steps if args.n_warmup_steps != 0 else train
 # ##############################################################################
 # Build model
 # ##############################################################################
-from model import Transformer
-from optim import ScheduledOptim
-import const
 
 model = Transformer(args)
 
 optimizer = ScheduledOptim(
-     torch.optim.Adam(model.get_trainable_parameters(),
-               betas=(0.9, 0.98), eps=1e-09),
-     args.d_model, args.n_warmup_steps)
+    torch.optim.Adam(model.get_trainable_parameters(),
+                     betas=(0.9, 0.98), eps=1e-09),
+    args.d_model, args.n_warmup_steps)
+
 
 def get_criterion(vocab_size):
-   weight = torch.ones(vocab_size)
-   weight[const.PAD] = 0
-   return torch.nn.CrossEntropyLoss(weight, size_average=False)
+    weight = torch.ones(vocab_size)
+    weight[const.PAD] = 0
+    return torch.nn.CrossEntropyLoss(weight, size_average=False)
+
 
 crit = get_criterion(args.dec_vocab_size)
 
 if use_cuda:
-   model = model.cuda()
-   crit = crit.cuda()
+    model = model.cuda()
+    crit = crit.cuda()
 
 # ##############################################################################
 # Training
 # ##############################################################################
-import time
-from tqdm import tqdm
-import const
 
 train_loss = []
 valid_loss = []
 accuracy = []
+
 
 def get_performance(crit, pred, gold):
     gold = gold.contiguous().view(-1)
@@ -113,11 +115,12 @@ def get_performance(crit, pred, gold):
 
     return loss, n_correct
 
+
 def evaluate():
     model.eval()
     total_loss = n_total_words = n_total_correct = 0
     for src, tgt in tqdm(validation_data, mininterval=0.2,
-                desc='Evaluate Processing', leave=False):
+                         desc='Evaluate Processing', leave=False):
         gold = tgt[0][:, 1:]
 
         pred = model(*src, *tgt)
@@ -129,12 +132,13 @@ def evaluate():
 
     return total_loss[0]/n_total_words, n_total_correct, n_total_words, n_total_correct/n_total_words
 
+
 def train():
     model.train()
     start_time = time.time()
     total_loss = n_total_words = 0
     for src, tgt in tqdm(training_data, mininterval=1,
-                desc='Train Processing', leave=False):
+                         desc='Train Processing', leave=False):
 
         gold = tgt[0][:, 1:]
 
@@ -152,6 +156,7 @@ def train():
 
     return total_loss[0]/n_total_words
 
+
 # ##############################################################################
 # Save Model
 # ##############################################################################
@@ -163,14 +168,16 @@ try:
         epoch_start_time = time.time()
         loss = train()
         train_loss.append(loss)
-        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(epoch, time.time() - epoch_start_time, loss))
+        print('| start of epoch {:3d} | time: {:2.2f}s | loss {:5.6f}'.format(
+            epoch, time.time() - epoch_start_time, loss))
 
         loss, corrects, n_words, acc = evaluate()
         valid_loss.append(loss)
         accuracy.append(acc)
         epoch_start_time = time.time()
         print('-' * 90)
-        print('| end of epoch {:3d} | time: {:2.2f}s | loss {:.4f} | accuracy {:.4f}%({}/{})'.format(epoch, time.time() - epoch_start_time, loss, acc*100, corrects, n_words))
+        print('| end of epoch {:3d} | time: {:2.2f}s | loss {:.4f} | accuracy {:.4f}%({}/{})'.format(
+            epoch, time.time() - epoch_start_time, loss, acc*100, corrects, n_words))
         print('-' * 90)
 
         if not best_acc or best_acc < acc:
@@ -185,7 +192,8 @@ try:
             torch.save(model_source, args.save)
 except KeyboardInterrupt:
     print("-"*80)
-    print("Exiting from training early | cost time: {:5.2f}min".format((time.time() - total_start_time)/60.0))
+    print("Exiting from training early | cost time: {:5.2f}min".format(
+        (time.time() - total_start_time)/60.0))
 
 print(train_loss)
 print(valid_loss)
