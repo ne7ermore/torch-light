@@ -1,4 +1,4 @@
-DATAPATH = "."
+DATAPATH = "data"
 
 PAD = 0
 UNK = 1

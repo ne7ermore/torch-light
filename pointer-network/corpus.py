@@ -59,7 +59,7 @@ class Corpus(object):
             src_texts, src_turn, tgt_indexs, tgt_texts = [], [], [], []
             with open(inf, encoding="utf8") as contexts:
                 for line in contexts:
-                    query1, query2, query3, target = line.strip().split("\t")
+                    query1, query2, query3, target = line.strip().split("\t\t")
 
                     q1_words = common.split_char(query1)
                     turn1 = [1]*(len(q1_words))

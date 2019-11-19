@@ -16,4 +16,5 @@ alpha-zero/alpha_go_zero_cheat_sheet.png
 .vscode
 information-extraction/data/*.json
 coreference/data
+pointer-network/data
 __pycache__
