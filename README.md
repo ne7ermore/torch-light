@@ -45,6 +45,7 @@ Get tutorial series in [Blog](https://ne7ermore.github.io/) if know Chinese
 * [Relation Network](https://github.com/ne7ermore/torch-light/tree/master/relation-network)
 * [Information Extraction](https://github.com/ne7ermore/torch-light/tree/master/information-extraction)
 * [Pointer Network](https://github.com/ne7ermore/torch-light/tree/master/pointer-network)
+* [coreference](https://github.com/ne7ermore/torch-light/tree/master/coreference)
 
 #### 4. Vision
 * [yolo-v3](https://github.com/ne7ermore/torch-light/tree/master/yolo-v3)
