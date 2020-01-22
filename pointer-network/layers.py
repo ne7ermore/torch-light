@@ -56,6 +56,8 @@ class MultiHeadAttention(nn.Module):
 
         residual = q
 
+        q = self.layer_norm(q)
+
         q = self.w_qs(q).view(sz_b, len_q, n_head, d_k)
         k = self.w_ks(k).view(sz_b, len_k, n_head, d_k)
         v = self.w_vs(v).view(sz_b, len_v, n_head, d_v)
@@ -71,7 +73,7 @@ class MultiHeadAttention(nn.Module):
         output = output.permute(1, 2, 0, 3).contiguous().view(sz_b, len_q, -1)
 
         output = self.dropout(self.fc(output))
-        output = self.layer_norm(output + residual)
+        output = output + residual
 
         return output, attn
 
@@ -90,8 +92,11 @@ class PositionWise(nn.Module):
 
     def forward(self, input):
         residual = input
+
+        input = self.lm(input)
+
         out = self.seq(input.transpose(1, 2)).transpose(1, 2)
-        return self.lm(residual + out)
+        return residual + out
 
 
 class EncoderLayer(nn.Module):
