@@ -1,5 +1,10 @@
 ## Introduction
-[Improving Multi-turn Dialogue Modelling with Utterance ReWriter](https://www.aclweb.org/anthology/P19-1003.pdf)<br>
+
+### Architecture of Model
+
+<p align="center">
+<img src="data/co-model.png" width="350">
+</p>
 
 #### An example of multi-turn dialogue. Each ut- terance 3 is rewritten into Utterance 3′. Green means coreference and blue means omission
 
