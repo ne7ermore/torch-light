@@ -93,7 +93,7 @@ If you find this code useful for your research, please cite:
   author = {Ne7ermore Tao},
   title = {torch-light},
   publisher = {GitHub},
-  year = {2018},
+  year = {2020},
   howpublished = {\url{https://github.com/ne7ermore/torch-light}}
 }
 ```
