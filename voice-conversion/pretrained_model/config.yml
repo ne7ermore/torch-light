@@ -1,0 +1,145 @@
+allow_cache: true
+batch_max_steps: 16200
+batch_size: 64
+config: conf/multi_band_melgan.v2.yaml
+dev_dumpdir: dump/dev/norm
+dev_feats_scp: null
+dev_segments: null
+dev_wav_scp: null
+discriminator_grad_norm: -1
+discriminator_optimizer_params:
+  amsgrad: true
+  eps: 1.0e-07
+  lr: 0.001
+  weight_decay: 0.0
+discriminator_optimizer_type: Adam
+discriminator_params:
+  channels: 16
+  downsample_pooling: AvgPool1d
+  downsample_pooling_params:
+    count_include_pad: false
+    kernel_size: 4
+    padding: 1
+    stride: 2
+  downsample_scales:
+  - 4
+  - 4
+  - 4
+  in_channels: 1
+  kernel_sizes:
+  - 5
+  - 3
+  max_downsample_channels: 512
+  nonlinear_activation: LeakyReLU
+  nonlinear_activation_params:
+    negative_slope: 0.2
+  out_channels: 1
+  scales: 3
+  use_weight_norm: true
+discriminator_scheduler_params:
+  gamma: 0.5
+  milestones:
+  - 100000
+  - 200000
+  - 300000
+  - 400000
+  - 500000
+  - 600000
+discriminator_scheduler_type: MultiStepLR
+discriminator_train_start_steps: 200000
+discriminator_type: MelGANMultiScaleDiscriminator
+distributed: false
+eval_interval_steps: 1000
+fft_size: 2048
+fmax: 7600
+fmin: 80
+format: hdf5
+generator_grad_norm: -1
+generator_optimizer_params:
+  amsgrad: true
+  eps: 1.0e-07
+  lr: 0.001
+  weight_decay: 0.0
+generator_optimizer_type: Adam
+generator_params:
+  channels: 384
+  in_channels: 80
+  kernel_size: 7
+  out_channels: 4
+  stack_kernel_size: 3
+  stacks: 4
+  upsample_scales:
+  - 5
+  - 5
+  - 3
+  use_causal_conv: false
+  use_weight_norm: true
+generator_scheduler_params:
+  gamma: 0.5
+  milestones:
+  - 100000
+  - 200000
+  - 300000
+  - 400000
+  - 500000
+  - 600000
+generator_scheduler_type: MultiStepLR
+generator_type: MelGANGenerator
+global_gain_scale: 1.0
+hop_size: 300
+lambda_adv: 2.5
+log_interval_steps: 1000
+num_mels: 80
+num_save_intermediate_results: 4
+num_workers: 4
+outdir: exp/train_nodev_csmsc_multi_band_melgan.v2
+pin_memory: true
+pretrain: ''
+rank: 0
+remove_short_samples: true
+resume: ''
+sampling_rate: 24000
+save_interval_steps: 50000
+stft_loss_params:
+  fft_sizes:
+  - 1024
+  - 2048
+  - 512
+  hop_sizes:
+  - 120
+  - 240
+  - 50
+  win_lengths:
+  - 600
+  - 1200
+  - 240
+  window: hann_window
+subband_stft_loss_params:
+  fft_sizes:
+  - 384
+  - 683
+  - 171
+  hop_sizes:
+  - 30
+  - 60
+  - 10
+  win_lengths:
+  - 150
+  - 300
+  - 60
+  window: hann_window
+train_dumpdir: dump/train_nodev/norm
+train_feats_scp: null
+train_max_steps: 1000000
+train_segments: null
+train_wav_scp: null
+trim_frame_size: 2048
+trim_hop_size: 512
+trim_silence: false
+trim_threshold_in_db: 60
+use_feat_match_loss: false
+use_subband_stft_loss: true
+verbose: 1
+version: 0.4.0
+win_length: 1200
+window: hann

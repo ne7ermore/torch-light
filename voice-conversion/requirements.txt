@@ -1,0 +1,12 @@
+torch
+fire
+pyyaml
+librosa
+webrtcvad
+numpy
+matplotlib
+scipy
+soundfile
+tensorboardX
+pysptk
+h5py
