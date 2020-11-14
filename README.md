@@ -57,6 +57,9 @@ Get tutorial series in [Blog](https://ne7ermore.github.io/) if know Chinese
 #### 5. Special Things
 * [Customize](https://github.com/ne7ermore/torch-light/tree/master/Customize)
 
+#### 6. Speech
+* [Voice Conversion](https://github.com/ne7ermore/torch-light/tree/master/voice-conversion)
+
 ## Getting Started
 
 ### clone code
