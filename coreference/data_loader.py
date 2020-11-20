@@ -22,6 +22,7 @@ class DataLoader:
     def load_files(self, dtype):
         documents = []
         data_path = f"{self.inp_data}/data/{dtype}"
+
         for _, _, files in os.walk(data_path):
             for inf in files:
                 if inf not in const.FILTERFILES and inf.endswith("conll"):

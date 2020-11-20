@@ -5,7 +5,9 @@ import skeleton2conll
 
 
 def skele2conll(data_type):
-    for root, _, files in os.walk(os.path.join(const.DATAPATH, "/conll-2012/", data_type)):
+    os.makedirs(f'{const.DATAPATH}/data/{data_type}', exist_ok=True)
+
+    for root, _, files in os.walk(os.path.join(const.DATAPATH, "conll-2012", data_type)):
         for inf in files:
             if inf.endswith("gold_skel"):
                 conll_file = os.path.join(root, inf)

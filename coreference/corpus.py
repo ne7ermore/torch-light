@@ -75,8 +75,8 @@ class Corpus(object):
                         [self.word.add(w) for w in tokens]
                         [self.char.add(c) for w in tokens for c in w]
 
-        print(f'ignored word count - {self.word.parse(2)}')
-        print(f'ignored char count - {self.char.parse(2)}')
+        print(f'ignored word count - {self.word.parse(0)}')
+        print(f'ignored char count - {self.char.parse(0)}')
 
     def save(self):
         data = {

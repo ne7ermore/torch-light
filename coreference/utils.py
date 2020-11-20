@@ -274,7 +274,8 @@ class Mention(object):
 
 if __name__ == "__main__":
     import torch, os
-    documents = load_file("./data/train/cbs_0001.conll")
+
+    documents = load_file(os.path.join(const.DATAPATH, "data/train/chtb_1027.conll"))
     corpus = torch.load(os.path.join(const.DATAPATH, "corpus.pt"))
 
     doc = documents[0]
